@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
-    app_name: str = Field(default="RAGent", alias="APP_NAME")
+    app_name: str = Field(default="AykAI", alias="APP_NAME")
     app_env: str = Field(default="dev", alias="APP_ENV")
     app_port: int = Field(default=8000, alias="APP_PORT")
     log_level: str = Field(default="INFO", alias="LOG_LEVEL")
@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     retrieval_dedup_by: str = Field(default="parent_id", alias="RETRIEVAL_DEDUP_BY")
 
     bm25_snapshot_path: str = Field(default=".cache/bm25_docs.json", alias="BM25_SNAPSHOT_PATH")
-    postgres_dsn: str = Field(default="postgresql://postgres:postgres@localhost:5432/ragent", alias="POSTGRES_DSN")
+    postgres_dsn: str = Field(default="postgresql://postgres:postgres@localhost:5432/AykAI", alias="POSTGRES_DSN")
 
 
 @lru_cache(maxsize=1)

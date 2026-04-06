@@ -1,0 +1,14 @@
+$kind: http-request
+name: http://127.0.0.1:8000/api/query/stream
+url: http://127.0.0.1:8000/api/query/stream
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+    "query": "What is AykAI?",
+    "stream": true
+    }
+order: 4492459975140210

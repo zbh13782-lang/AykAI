@@ -1,0 +1,44 @@
+import logging
+
+from fastapi import APIRouter, HTTPException
+
+from api.dependencies import get_services
+from api.schemas.request import IngestRequest
+from api.schemas.response import IngestResponse
+
+router = APIRouter()
+logger = logging.getLogger(__name__)
+
+@router.post("/ingest", response_model=IngestResponse)
+def ingest(req:IngestRequest) -> IngestResponse:
+    logger.info(
+        "ingest_start doc_id=%s source=%s content_len=%s",
+        req.doc_id,
+        req.source,
+        len(req.content),
+    )
+    services = get_services()
+    try:
+        state = services["ingest_graph"].invoke(
+            {
+                "doc_id": req.doc_id,
+                "source": req.source,
+                "content": req.content,
+                "metadata": req.metadata,
+            }
+        )
+        services["bm25_retriever"].refresh()    #记得刷新这一步，保存到内存
+        logger.info(
+            "ingest_done doc_id=%s inserted_parents=%s inserted_children=%s",
+            req.doc_id,
+            state.get("inserted_parents", 0),
+            state.get("inserted_children", 0),
+        )
+        return IngestResponse(
+            status="ok",
+            inserted_parents=state.get("inserted_parents", 0),
+            inserted_children=state.get("inserted_children", 0),
+        )
+    except Exception as exc:  # noqa: BLE001
+        logger.exception("ingest_failed doc_id=%s error=%s", req.doc_id, exc)
+        raise HTTPException(status_code=500, detail=f"ingest failed: {exc}") from exc

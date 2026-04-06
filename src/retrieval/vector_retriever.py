@@ -11,5 +11,5 @@ class VectorRetriever:
         self.settings = settings
 
     def retrieve(self,query:str,top_k:int | None = None) -> list[dict]:
-        query_vector = self.embeddings.vector(query)
+        query_vector = self.embeddings.embed_query(query)
         return self.milvus_service.vector_search(query_vector=query_vector, top_k=top_k or self.settings.retrieval_vector_top_k)

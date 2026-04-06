@@ -1,0 +1,14 @@
+$kind: http-request
+name: http://127.0.0.1:8000/api/query
+url: http://127.0.0.1:8000/api/query
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+    "query": "What storage does AykAI use for parent and child chunks?",
+    "stream": false
+    }
+order: 4142092723763249

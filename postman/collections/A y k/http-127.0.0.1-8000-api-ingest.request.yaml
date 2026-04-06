@@ -1,0 +1,29 @@
+$kind: http-request
+name: http://127.0.0.1:8000/api/ingest
+url: http://127.0.0.1:8000/api/ingest
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: >-
+    {
+
+    "doc_id": "postman-demo-001",
+
+    "source": "postman-demo",
+
+    "content": "AykAI is a reusable RAG template. It uses vector retrieval plus
+    BM25 fusion. Parent chunks are stored in PostgreSQL and child chunks in
+    Milvus.",
+
+    "metadata": {
+
+    "suite": "postman",
+
+    "lang": "en"
+
+    }
+
+    }
+order: 1538872033736018
