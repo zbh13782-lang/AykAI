@@ -40,7 +40,7 @@ class PostgresParentStore:
                     """
                 )
 
-    def upsert_parent(self,rows:list[dict[str, Any]]) -> None:
+    def upsert_parents(self,rows:list[dict[str, Any]]) -> None:
         if not rows:
             return
 

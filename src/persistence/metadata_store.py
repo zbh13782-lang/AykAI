@@ -1,7 +1,9 @@
 from pathlib import Path
 from typing import Any
 import json
-
+'''
+后续优化点：换用es
+'''
 class JsonMetadataStore:
     def __init__(self, path:str):
         self.path = Path(path)
