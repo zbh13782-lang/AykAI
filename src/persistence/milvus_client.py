@@ -2,6 +2,9 @@ from config.settings import Settings
 from typing import Any
 from pymilvus import Collection, CollectionSchema, DataType, FieldSchema, connections, utility
 
+'''后面考虑换pgvector了.....'''
+
+
 class MilvusService:
     def __init__(self,settings:Settings):
         self.settings = settings

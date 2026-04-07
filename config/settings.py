@@ -24,14 +24,25 @@ class Settings(BaseSettings):
     retrieval_vector_top_k: int = Field(default=20, alias="RETRIEVAL_VECTOR_TOP_K")
     retrieval_bm25_top_k: int = Field(default=20, alias="RETRIEVAL_BM25_TOP_K")
     retrieval_final_top_k: int = Field(default=8, alias="RETRIEVAL_FINAL_TOP_K")
-    retrieval_fusion_strategy: str = Field(default="weighted", alias="RETRIEVAL_FUSION_STRATEGY")
+    retrieval_fusion_strategy: str = Field(default="rrf", alias="RETRIEVAL_FUSION_STRATEGY")
+    retrieval_rrf_k: int = Field(default=60, alias="RETRIEVAL_RRF_K")
     retrieval_vector_weight: float = Field(default=0.6, alias="RETRIEVAL_VECTOR_WEIGHT")
     retrieval_bm25_weight: float = Field(default=0.4, alias="RETRIEVAL_BM25_WEIGHT")
     retrieval_score_threshold: float = Field(default=0.0, alias="RETRIEVAL_SCORE_THRESHOLD")
     retrieval_dedup_by: str = Field(default="parent_id", alias="RETRIEVAL_DEDUP_BY")
 
-    bm25_snapshot_path: str = Field(default=".cache/bm25_docs.json", alias="BM25_SNAPSHOT_PATH")
-    postgres_dsn: str = Field(default="postgresql://postgres:postgres@localhost:5432/AykAI", alias="POSTGRES_DSN")
+    elasticsearch_url: str = Field(default="", alias="ELASTICSEARCH_URL")
+    elasticsearch_index: str = Field(default="rag_child_chunks", alias="ELASTICSEARCH_INDEX")
+
+    elasticsearch_vector_dim: int = Field(default=1536, alias="ELASTICSEARCH_VECTOR_DIM")
+
+    elasticsearch_bulk_batch_size: int = Field(default=500, alias="ELASTICSEARCH_BULK_BATCH_SIZE")
+
+    bm25_fallback_warmup_limit: int = Field(default=10000, alias="BM25_FALLBACK_WARMUP_LIMIT")
+    bm25_fallback_warmup_batch_size: int = Field(default=500, alias="BM25_FALLBACK_WARMUP_BATCH_SIZE")
+    ingest_write_retry_attempts: int = Field(default=2, alias="INGEST_WRITE_RETRY_ATTEMPTS")
+
+    postgres_dsn: str = Field(default="postgresql://postgres:postgres@localhost:5432/ragent", alias="POSTGRES_DSN")
 
 
 @lru_cache(maxsize=1)
