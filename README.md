@@ -6,15 +6,15 @@ Rag项目
 
 ## 技术栈
 
-LangGraph，langChain
+LangGraph（主要依靠），langChain
 
-SSE
+SSE流失输出
 
-多路召回：Vector + bm25，后面准备尝试Graphrag,todo
+多路召回：向量检索 + 关键词检索 ，后面准备尝试Graphrag,todo
 
 父子索引：父块存pg，子块存milvus（本机）
 
-多种文本类型：md，pdf todo
+多种文本类型：md，pdf
 
 ## 1. 启动流程
 
