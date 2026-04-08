@@ -1,6 +1,7 @@
 import logging
 
 from fastapi import APIRouter, HTTPException
+from starlette.concurrency import run_in_threadpool
 
 from api.dependencies import get_services
 from api.schemas.request import IngestRequest
@@ -9,8 +10,9 @@ from api.schemas.response import IngestResponse
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
+#接受文档接口
 @router.post("/ingest", response_model=IngestResponse)
-def ingest(req:IngestRequest) -> IngestResponse:
+async def ingest(req: IngestRequest) -> IngestResponse:
     logger.info(
         "ingest_start doc_id=%s source=%s content_len=%s",
         req.doc_id,
@@ -19,15 +21,15 @@ def ingest(req:IngestRequest) -> IngestResponse:
     )
     services = get_services()
     try:
-        state = services["ingest_graph"].invoke(
+        state = await run_in_threadpool(
+            services["ingest_graph"].invoke,
             {
                 "doc_id": req.doc_id,
                 "source": req.source,
                 "content": req.content,
                 "metadata": req.metadata,
-            }
+            },
         )
-        services["bm25_retriever"].refresh()    #记得刷新这一步，保存到内存
         logger.info(
             "ingest_done doc_id=%s inserted_parents=%s inserted_children=%s",
             req.doc_id,

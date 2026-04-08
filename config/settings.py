@@ -42,7 +42,7 @@ class Settings(BaseSettings):
     bm25_fallback_warmup_batch_size: int = Field(default=500, alias="BM25_FALLBACK_WARMUP_BATCH_SIZE")
     ingest_write_retry_attempts: int = Field(default=2, alias="INGEST_WRITE_RETRY_ATTEMPTS")
 
-    postgres_dsn: str = Field(default="postgresql://postgres:postgres@localhost:5432/ragent", alias="POSTGRES_DSN")
+    postgres_dsn: str = Field(default="postgresql://postgres:postgres@localhost:5432/AykAI", alias="POSTGRES_DSN")
 
 
 @lru_cache(maxsize=1)

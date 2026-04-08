@@ -8,7 +8,7 @@ body:
   type: json
   content: |-
     {
-    "query": "What storage does AykAI use for parent and child chunks?",
+    "query": "aykai是什么？",
     "stream": false
     }
 order: 4142092723763249

@@ -22,9 +22,11 @@ SSE
 
 ### 1.1 前置要求
 
-- uv（https://docs.astral.sh/uv/）
-- Docker Desktop（含 docker compose）
-- Python 3.14+
+| 组件 | 版本要求 | 说明 |
+| --- | --- | --- |
+| uv | >= 0.11 | Python 包与虚拟环境管理，安装文档: https://docs.astral.sh/uv/ |
+| Python | 3.14+ | 本项目当前按 3.14 开发与验证 |
+| Docker Desktop | 最新稳定版 | 需要包含 Docker Compose |
 
 ### 1.2 初始化 Python 环境并安装依赖
 
@@ -62,10 +64,13 @@ docker compose ps
 
 预期看到：
 
-- AykAI-postgres: healthy
-- milvus-etcd: up
-- milvus-minio: up
-- milvus-standalone: up
+| 服务 | 预期状态 | 说明 |
+| --- | --- | --- |
+| AykAI-postgres | healthy | 父块存储 |
+| milvus-etcd | up | Milvus 依赖 |
+| milvus-minio | up | Milvus 依赖 |
+| milvus-standalone | up | 子块向量存储 |
+| aykai-elasticsearch | healthy | BM25 检索与中文 IK 分词 |
 
 ### 1.5 启动 API
 

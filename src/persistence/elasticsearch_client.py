@@ -4,7 +4,6 @@ import logging
 from typing import Any
 from elasticsearch import Elasticsearch
 
-from config import settings
 from config.settings import Settings
 
 '''
@@ -17,6 +16,7 @@ class ElasticsearchService:
     def __init__(self,settings: Settings):
         self.settings = settings
         self._client:Elasticsearch | None = None
+        self._ik_available: bool = False
 
     @property
     def enabled(self) -> bool:
@@ -29,46 +29,64 @@ class ElasticsearchService:
             self._client = Elasticsearch(self.settings.elasticsearch_url)
         return self._client
 
-    def _init_index(self)->None:
+    def _init_index(self) -> None:
         client = self.connect()
         if client is None:
             return
 
         index_name = self.settings.elasticsearch_index
-        if client.indices.exists(index_name):
+        self._ik_available = self._detect_ik_available(client)
+        if client.indices.exists(index=index_name):
             return
 
-        mapping = {
-            "settings": {
-                "analysis": {
-                    "analyzer": {
-                        "ik_index_analyzer": {
-                            "type": "custom",
-                            "tokenizer": "ik_max_word",
-                        },
-                        "ik_search_analyzer": {
-                            "type": "custom",
-                            "tokenizer": "ik_smart",
-                        },
+        mapping: dict[str, Any]
+        if self._ik_available:
+            mapping = {
+                "settings": {
+                    "analysis": {
+                        "analyzer": {
+                            "ik_index_analyzer": {
+                                "type": "custom",
+                                "tokenizer": "ik_max_word",
+                            },
+                            "ik_search_analyzer": {
+                                "type": "custom",
+                                "tokenizer": "ik_smart",
+                            },
+                        }
                     }
-                }
-            },
-            "mappings": {
-                "properties": {
-                    "chunk_id": {"type": "keyword"},
-                    "parent_id": {"type": "keyword"},
-                    "doc_id": {"type": "keyword"},
-                    "source": {"type": "keyword"},
-                    "chunk_order": {"type": "integer"},
-                    "content": {
-                        "type": "text",
-                        "analyzer": "ik_index_analyzer",
-                        "search_analyzer": "ik_search_analyzer",
-                    },
-                    "metadata": {"type": "object", "dynamic": True},
-                }
+                },
+                "mappings": {
+                    "properties": {
+                        "chunk_id": {"type": "keyword"},
+                        "parent_id": {"type": "keyword"},
+                        "doc_id": {"type": "keyword"},
+                        "source": {"type": "keyword"},
+                        "chunk_order": {"type": "integer"},
+                        "content": {
+                            "type": "text",
+                            "analyzer": "ik_index_analyzer",
+                            "search_analyzer": "ik_search_analyzer",
+                        },
+                        "metadata": {"type": "object", "dynamic": True},
+                    }
+                },
             }
-        }
+        else:
+            mapping = {
+                "mappings": {
+                    "properties": {
+                        "chunk_id": {"type": "keyword"},
+                        "parent_id": {"type": "keyword"},
+                        "doc_id": {"type": "keyword"},
+                        "source": {"type": "keyword"},
+                        "chunk_order": {"type": "integer"},
+                        "content": {"type": "text"},
+                        "metadata": {"type": "object", "dynamic": True},
+                    }
+                },
+            }
+            logger.warning("ik_tokenizer_unavailable_use_standard_analyzer")
 
         try:
             client.indices.create(index=index_name, body=mapping, ignore=[400, 404])
@@ -78,16 +96,27 @@ class ElasticsearchService:
                 "Failed to create Elasticsearch index with IK analyzers. Ensure analysis-ik plugin is installed."
             ) from exc
 
+    def init_index(self) -> None:
+        self._init_index()
+
+    @staticmethod
+    def _detect_ik_available(client: Elasticsearch) -> bool:
+        try:
+            client.indices.analyze(body={"tokenizer": "ik_smart", "text": "test"})
+            return True
+        except Exception:  # noqa: BLE001
+            return False
+
     def upsert_children(self,rows:list[dict[str, Any]]) -> None:
         client = self.connect()
         if client is None or not rows:
             return
 
-        batch_size = max(1,settings.elasticsearch_bulk_batch_size)
+        batch_size = max(1, self.settings.elasticsearch_bulk_batch_size)
 
         for i in range(0,len(rows),batch_size):
             batch = rows[i:i + batch_size]
-            ops = list[dict[str, Any]] = []
+            ops: list[dict[str, Any]] = []
 
             for row in batch:
                 ops.append({"index": {"_index": self.settings.elasticsearch_index, "_id": row["chunk_id"]}})
@@ -138,7 +167,7 @@ class ElasticsearchService:
         try :
             result = client.search(
                 index = self.settings.elasticsearch_index,
-                query={"match": {"content": {"query": query, "analyzer": "ik_smart"}}},
+                query={"match": {"content": {"query": query}}},
                 size=top_k,
             )
 

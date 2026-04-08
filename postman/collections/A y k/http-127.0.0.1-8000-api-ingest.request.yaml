@@ -6,24 +6,14 @@ headers:
   Content-Type: application/json
 body:
   type: json
-  content: >-
+  content: |-
     {
-
     "doc_id": "postman-demo-001",
-
     "source": "postman-demo",
-
-    "content": "AykAI is a reusable RAG template. It uses vector retrieval plus
-    BM25 fusion. Parent chunks are stored in PostgreSQL and child chunks in
-    Milvus.",
-
+    "content": "aykai是zbh开发的可以支持bm25检索，向量检索的rag类agent智能体",
     "metadata": {
-
     "suite": "postman",
-
     "lang": "en"
-
     }
-
     }
 order: 1538872033736018

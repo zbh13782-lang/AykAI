@@ -4,15 +4,14 @@ from typing import Any, TypedDict
 
 from langgraph.graph import START, END, StateGraph
 from pydantic import BaseModel,Field
-
+from pathlib import Path
 from src.indexing.parent_child_builder import build_index_records
+import json
 
 #数据处理管道
 #chunk->embed->upsert
 
-
 class IngestState(BaseModel):
-
     doc_id: str
     source: str = "unknown"
     content: str
@@ -20,14 +19,42 @@ class IngestState(BaseModel):
     parents: list[dict[str, Any]] = Field(default_factory=list)
     children: list[dict[str, Any]] = Field(default_factory=list)
     child_embeddings: list[list[float]] = Field(default_factory=list)
-    inserted_children: int = 0
+    inserted_children: int = 0      #已插入子块数量
     inserted_parents: int = 0     #已插入父块数量
 
-def _bm25_row_key(row: dict[str, Any]) -> tuple[str, str]:
-    # 为索引生成唯一建，保证快照幂等性
-    return (str(row.get("doc_id", "")), str(row.get("content", "")))
 
-def build_ingest_graph(embeddings,milvus_service,metadata_store,parent_store):
+def build_ingest_graph(
+        embeddings,
+        milvus_service,
+        parent_store,
+        semantic_indexer = None,
+        bm25_indexer = None,
+        write_retry_attempts: int = 3,
+        ):
+
+    #错误重试机制
+    def _run_with_retries(func,rows:list[dict[str, Any]],stage:str) -> None:
+        last_exc = Exception | None
+        attempts = max(1,int(write_retry_attempts))
+        for _ in range(attempts):
+            try:
+                func(rows)
+                return
+            except Exception as e:
+                last_exc = e
+        raise RuntimeError(f"ingest write failed at stage={stage}: {last_exc}") from last_exc
+
+    def _enqueue_repair(stage:str,child_rows:list[dict[str, Any]],parent_rows:list[dict[str,Any]]) -> None:
+        repair_path = Path("logs/ingest_repair_queue.jsonl")
+        repair_path.parent.mkdir(parents=True, exist_ok=True)
+        payload = {
+            "stage": stage,
+            "parent_rows": parent_rows,
+            "child_rows": [{k: v for k, v in row.items() if k != "embedding"} for row in child_rows],
+        }
+        with repair_path.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(payload, ensure_ascii=True) + "\n")
+
 
     #节点1：chunk_node  文档分块
     def chunk_node(state:IngestState) -> IngestState:
@@ -68,7 +95,6 @@ def build_ingest_graph(embeddings,milvus_service,metadata_store,parent_store):
             for p in state.parents
         ]
         child_rows = []
-        bm25_rows = []
         for c, vec in zip(state.children, state.child_embeddings, strict=False):
             child_rows.append(
                 {
@@ -82,28 +108,19 @@ def build_ingest_graph(embeddings,milvus_service,metadata_store,parent_store):
                     "embedding": vec,
                 }
             )
-            bm25_rows.append(
-                {
-                    "chunk_id": c["chunk_id"],
-                    "parent_id": c["parent_id"],
-                    "doc_id": c["doc_id"],
-                    "source": c["source"],
-                    "content": c["content"],
-                    "metadata": c.get("metadata", {}),
-                }
-            )
 
-        parent_store.upsert_parents(parent_rows)
-        milvus_service.upsert_children(child_rows)
 
-        existing = metadata_store.load_bm25_docs()
+        try:
+            _run_with_retries(milvus_service.upsert_children,child_rows,stage = "metadata")
+            if semantic_indexer is not None and getattr(semantic_indexer, "enabled", False):
+                _run_with_retries(semantic_indexer.upsert_children, child_rows, stage="elasticsearch")
+            _run_with_retries(parent_store.upsert_parents, parent_rows, stage="postgres")
+            if bm25_indexer is not None:
+                bm25_indexer.upsert_children(child_rows)
+        except Exception as e:
+            _enqueue_repair(stage = 'upsert',child_rows=child_rows,parent_rows=parent_rows)
+            raise e
 
-        merged_by_key: dict[tuple[str, str], dict[str, Any]] = {}
-        for row in existing:
-            merged_by_key[_bm25_row_key(row)] = row
-        for row in bm25_rows:
-            merged_by_key[_bm25_row_key(row)] = row
-        metadata_store.save_bm25_docs(list(merged_by_key.values()))
 
         return state.model_copy(
             update={

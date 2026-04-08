@@ -1,14 +1,14 @@
 from fastapi import APIRouter
 
-from api.dependencies import get_services
 from api.schemas.response import HealthResponse
+from config.settings import get_settings
 
 router = APIRouter()
 
 @router.get("/health",response_model=HealthResponse)
 def health() -> HealthResponse:
-    services = get_services()
+    settings = get_settings()
     return HealthResponse(
         status="ok",
-        app=services["settings"].app_name,
+        app=settings.app_name,
     )

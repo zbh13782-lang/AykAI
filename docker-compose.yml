@@ -65,8 +65,30 @@ services:
       - etcd
       - minio
 
+  elasticsearch:
+    container_name: aykai-elasticsearch
+    build:
+      context: .
+      dockerfile: docker/elasticsearch/Dockerfile
+    image: aykai/elasticsearch-ik:9.3.0
+    restart: unless-stopped
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:9200 >/dev/null || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+
 volumes:
   postgres_data:
   etcd_data:
   minio_data:
   milvus_data:
+  elasticsearch_data:
