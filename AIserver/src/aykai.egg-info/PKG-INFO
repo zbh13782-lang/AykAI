@@ -1,0 +1,29 @@
+Metadata-Version: 2.4
+Name: aykai
+Version: 0.1.0
+Summary: Add your description here
+Requires-Python: >=3.14
+Description-Content-Type: text/markdown
+Requires-Dist: pydantic>=2.12.5
+Requires-Dist: pydantic-settings>=2.13.1
+
+# AykAI
+
+Rag项目
+
+搭建一个模版，以后拿来复用
+
+## 技术栈
+
+LangGraph，langChain
+
+SSE
+
+多路召回：Vector + bm25，后面准备尝试Graphrag,todo
+
+父子索引：父块存pg，子块存milvus（本机）
+
+多种文本类型：md，pdf todo
+
+
+

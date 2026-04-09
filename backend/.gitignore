@@ -1,0 +1,67 @@
+#标准go的gitignore
+# Binaries for programs and plugins
+*.exe
+*.dll
+*.so
+*.dylib
+*.out
+
+# Test binary, built with `go test -c`
+*.test
+
+# Cross-compilation temporary build
+*.exe~
+*.out~
+
+# Coverage profiling
+*.prof
+
+# Binaries
+bin/
+build/
+dist/
+
+# Dependencies
+vendor/
+
+# Logs
+*.log
+logs/
+
+# Environment specific files
+.env
+.env.local
+.env.production
+.env.development
+
+# Configuration files (except config.toml template)
+config/*.local
+config/*_local.*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Processed config files (keep the template only)
+config/config_local.*
+!config/config.toml
+
+# Database
+*.db
+*.db-journal
+
+# Go workspace
+go.work
+go.work.sum

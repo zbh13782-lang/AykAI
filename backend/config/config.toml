@@ -1,0 +1,33 @@
+[mainConfig]
+appName = "GopherAI"
+host = "0.0.0.0"
+port = 9030
+
+[emailConfig]
+authcode = ""
+email = "3332366752@qq.com"
+
+[redisConfig]
+host = "redis"
+port = 6379
+db = 0
+password = "123456"
+
+[postgresConfig]
+host = "postgres"
+port = 5432
+user = "postgres"
+password = "postgres"
+databaseName = "chathistory"
+sslmode = "disable"
+
+[jwtConfig]
+expire_duration= 8760
+issuer= "zzzzzbhhh"
+subject= "GopherAI"
+key= "GopherAI-v1"
+
+[pythonAIConfig]
+baseURL = "http://python-api:8000"
+timeoutSeconds = 300
+internalKey = "dev-internal-key"

@@ -1,0 +1,100 @@
+# AykAI
+
+Rag项目
+
+搭建一个模版，以后拿来复用
+
+## 技术栈
+
+LangGraph（主要依靠），langChain
+
+SSE流失输出
+
+多路召回：向量检索 + 关键词检索 ，后面准备尝试Graphrag,todo
+
+父子索引：父块存pg，子块存milvus（本机）
+
+多种文本类型：md，pdf
+
+目前的不足（想法）：增加三段记忆，鉴权操作，
+
+可能会引入function calling ，mcp ？（虽然我感觉没什么必要，作为单纯的rag开发项目来说，但也值得做一做吧--单纯的rag工程就挺折腾）
+
+
+## 1. 启动流程
+
+本项目默认使用 uv 进行 Python 环境与依赖管理。
+
+### 1.1 前置要求
+
+| 组件 | 版本要求 | 说明 |
+| --- | --- | --- |
+| uv | >= 0.11 | Python 包与虚拟环境管理，安装文档: https://docs.astral.sh/uv/ |
+| Python | 3.14+ | 本项目当前按 3.14 开发与验证 |
+| Docker Desktop | 最新稳定版 | 需要包含 Docker Compose |
+
+### 1.2 初始化 Python 环境并安装依赖
+
+在项目根目录执行：
+
+```bash
+uv venv --python 3.14
+uv sync --extra dev
+```
+
+说明：
+
+- uv 会基于 pyproject.toml 安装运行依赖
+- --extra dev 会额外安装 pytest 等开发依赖
+
+### 1.3 配置环境变量
+
+```bash
+cp .env.example .env
+```
+
+然后编辑 .env，至少填这 4 项：
+
+- OPENAI_API_KEY
+- OPENAI_BASE_URL
+- OPENAI_EMBEDDING_MODEL
+- OPENAI_CHAT_MODEL
+
+### 1.4 启动数据库与向量库
+
+```bash
+docker compose up -d
+docker compose ps
+```
+
+预期看到：
+
+| 服务 | 预期状态 | 说明 |
+| --- | --- | --- |
+| AykAI-postgres | healthy | 父块存储 |
+| milvus-etcd | up | Milvus 依赖 |
+| milvus-minio | up | Milvus 依赖 |
+| milvus-standalone | up | 子块向量存储 |
+| aykai-elasticsearch | healthy | BM25 检索与中文 IK 分词 |
+
+### 1.5 启动 API
+
+```bash
+uv run python -m uvicorn api.main:app --host 127.0.0.1 --port 8000
+```
+
+默认地址：
+
+- http://127.0.0.1:8000
+
+## 2. 快速自检
+
+```bash
+curl -i http://127.0.0.1:8000/api/health
+```
+
+预期返回 200：
+
+```json
+{"status":"ok","app":"AykAI"}
+```
