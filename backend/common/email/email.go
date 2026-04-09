@@ -1,15 +1,15 @@
 package email
 
 import (
-	"GopherAI/config"
+	"AykAI/config"
 	"fmt"
 
 	"gopkg.in/gomail.v2"
 )
 
 const (
-	CodeMsg = "GopherAI验证码(2分钟内有效)："
-	UserMsg = "GopherAI账号如下:"
+	CodeMsg = "AykAI验证码(2分钟内有效)："
+	UserMsg = "AykAI账号如下:"
 )
 
 func SendCaptcha(email, code, msg string) error {
@@ -17,7 +17,7 @@ func SendCaptcha(email, code, msg string) error {
 
 	m.SetHeader("From", config.GetConfig().EmailConfig.Email)
 	m.SetHeader("To", email)
-	m.SetHeader("Subject", "来自GopherAI的信息")
+	m.SetHeader("Subject", "来自AykAI的信息")
 	m.SetBody("text/plain", msg+" "+code)
 
 	// 使用SSL连接，端口465

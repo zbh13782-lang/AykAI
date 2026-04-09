@@ -1,5 +1,5 @@
 [mainConfig]
-appName = "GopherAI"
+appName = "AykAI"
 host = "0.0.0.0"
 port = 9030
 
@@ -24,8 +24,8 @@ sslmode = "disable"
 [jwtConfig]
 expire_duration= 8760
 issuer= "zzzzzbhhh"
-subject= "GopherAI"
-key= "GopherAI-v1"
+subject= "AykAI"
+key= "AykAI-v1"
 
 [pythonAIConfig]
 baseURL = "http://python-api:8000"

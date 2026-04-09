@@ -3,7 +3,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: gopherai-backend
+    container_name: aykai-backend
     restart: unless-stopped
     ports:
       - "9030:9030"
@@ -11,6 +11,8 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       OPENAI_MODEL_NAME: ${OPENAI_MODEL_NAME:-qwen-plus}
       OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://dashscope.aliyuncs.com/compatible-mode/v1}
+      SMTP_EMAIL: ${SMTP_EMAIL:-}
+      SMTP_AUTHCODE: ${SMTP_AUTHCODE:-}
     depends_on:
       postgres:
         condition: service_healthy

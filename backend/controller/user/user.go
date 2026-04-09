@@ -1,9 +1,9 @@
 package user
 
 import (
-	"GopherAI/common/code"
-	"GopherAI/controller"
-	"GopherAI/service/user"
+	"AykAI/common/code"
+	"AykAI/controller"
+	"AykAI/service/user"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

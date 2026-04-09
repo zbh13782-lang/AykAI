@@ -1,10 +1,10 @@
 package session
 
 import (
-	"GopherAI/common/code"
-	"GopherAI/controller"
-	"GopherAI/model"
-	"GopherAI/service/session"
+	"AykAI/common/code"
+	"AykAI/controller"
+	"AykAI/model"
+	"AykAI/service/session"
 	"encoding/json"
 	"fmt"
 	"io"

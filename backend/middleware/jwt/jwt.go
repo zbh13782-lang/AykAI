@@ -1,9 +1,9 @@
 package jwt
 
 import (
-	"GopherAI/common/code"
-	"GopherAI/controller"
-	"GopherAI/utils/myjwt"
+	"AykAI/common/code"
+	"AykAI/controller"
+	"AykAI/utils/myjwt"
 	"log"
 	"net/http"
 	"strings"

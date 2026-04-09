@@ -4,10 +4,10 @@ import (
 	"log"
 	"net/http"
 
-	"GopherAI/common/code"
-	messageDao "GopherAI/dao/message"
-	sessionDao "GopherAI/dao/session"
-	"GopherAI/model"
+	"AykAI/common/code"
+	messageDao "AykAI/dao/message"
+	sessionDao "AykAI/dao/session"
+	"AykAI/model"
 
 	"github.com/google/uuid"
 )

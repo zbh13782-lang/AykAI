@@ -1,7 +1,7 @@
 package router
 
 import (
-	"GopherAI/controller/session"
+	"AykAI/controller/session"
 
 	"github.com/gin-gonic/gin"
 )

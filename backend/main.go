@@ -1,10 +1,10 @@
 package main
 
 import (
-	"GopherAI/common/mysql"
-	"GopherAI/common/redis"
-	"GopherAI/config"
-	"GopherAI/router"
+	"AykAI/common/mysql"
+	"AykAI/common/redis"
+	"AykAI/config"
+	"AykAI/router"
 	"fmt"
 	"log"
 

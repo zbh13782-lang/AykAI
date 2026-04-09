@@ -1,4 +1,4 @@
-module GopherAI
+module AykAI
 
 go 1.25.4
 

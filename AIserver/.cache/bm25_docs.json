@@ -1,0 +1,43 @@
+[
+  {
+    "chunk_id": "smoke-1-c-0-0-378b2a18",
+    "parent_id": "p-a3a0c2412f9c46fcb1ff3fc52270b8ae",
+    "doc_id": "smoke-1",
+    "source": "smoke",
+    "content": "AykAI is a RAG template project.",
+    "metadata": {
+      "tag": "smoke"
+    }
+  },
+  {
+    "chunk_id": "smoke-2-c-0-0-34e2117d",
+    "parent_id": "p-8893e0f8ccac4b9d88cb7877fbcf6e51",
+    "doc_id": "smoke-2",
+    "source": "smoke",
+    "content": "AykAI rerun validation doc.",
+    "metadata": {
+      "tag": "rerun"
+    }
+  },
+  {
+    "chunk_id": "docker-check-1-c-0-0-3371b306",
+    "parent_id": "p-7c24c209243a40e0adbf0058f52495a2",
+    "doc_id": "docker-check-1",
+    "source": "docker-check",
+    "content": "AykAI docker full-stack check document.",
+    "metadata": {
+      "tag": "docker-check"
+    }
+  },
+  {
+    "chunk_id": "postman-demo-001-c-0-0-066a43cd",
+    "parent_id": "p-a3df670b03dc4f8b89255d51d171fef9",
+    "doc_id": "postman-demo-001",
+    "source": "postman-demo",
+    "content": "AykAI is a reusable RAG template. It uses vector retrieval plus BM25 fusion. Parent chunks are stored in PostgreSQL and child chunks in Milvus.",
+    "metadata": {
+      "suite": "postman",
+      "lang": "en"
+    }
+  }
+]

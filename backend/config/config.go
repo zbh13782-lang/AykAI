@@ -78,13 +78,13 @@ func InitConfig() error {
 	config = new(Config)
 
 	var candidates []string
-	if explicitPath := os.Getenv("GOPHERAI_CONFIG_FILE"); explicitPath != "" {
+	if explicitPath := os.Getenv("AYKAI_CONFIG_FILE"); explicitPath != "" {
 		candidates = append(candidates, explicitPath)
 	}
 
 	candidates = append(candidates,
-		"../../config/gopherai.toml",
-		"../config/gopherai.toml",
+		"../../config/aykai.toml",
+		"../config/aykai.toml",
 		"config/config.toml",
 	)
 
@@ -95,12 +95,27 @@ func InitConfig() error {
 		if _, err := toml.DecodeFile(path, config); err != nil {
 			return err
 		}
+		applyEnvOverrides(config)
 		return nil
 	}
 
 	err := fmt.Errorf("no config file found, checked: %v", candidates)
 	log.Println(err)
 	return err
+}
+
+func applyEnvOverrides(cfg *Config) {
+	if cfg == nil {
+		return
+	}
+
+	if email := os.Getenv("SMTP_EMAIL"); email != "" {
+		cfg.EmailConfig.Email = email
+	}
+
+	if authCode := os.Getenv("SMTP_AUTHCODE"); authCode != "" {
+		cfg.EmailConfig.Authcode = authCode
+	}
 }
 
 func GetConfig() *Config {

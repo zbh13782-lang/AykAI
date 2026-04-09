@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"GopherAI/common/code"
+	"AykAI/common/code"
 )
 
 type Response struct {

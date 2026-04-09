@@ -1,0 +1,1982 @@
+2026-04-06 22:17:48 | INFO | api.main | http_request method=GET path=/api/health status=200 duration_ms=2732
+2026-04-06 22:18:12 | INFO | api.main | http_request method=POST path=/api/ingest status=422 duration_ms=1
+2026-04-06 22:18:22 | INFO | api.routes.ingest | ingest_start doc_id=smoke-1 source=smoke content_len=32
+2026-04-06 22:18:22 | ERROR | api.routes.ingest | ingest_failed doc_id=smoke-1 error=1 validation error for IngestState
+metadata
+  Input should be a valid dictionary [type=dict_type, input_value='{"tag":"smoke"}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/dict_type
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/api/routes/ingest.py", line 22, in ingest
+    state = services["ingest_graph"].invoke(
+        {
+    ...<4 lines>...
+        }
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/pregel/main.py", line 3309, in invoke
+    for chunk in self.stream(
+                 ~~~~~~~~~~~^
+        input,
+        ^^^^^^
+    ...<10 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    ):
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/pregel/main.py", line 2733, in stream
+    while loop.tick():
+          ~~~~~~~~~^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/pregel/_loop.py", line 474, in tick
+    self.tasks = prepare_next_tasks(
+                 ~~~~~~~~~~~~~~~~~~^
+        self.checkpoint,
+        ^^^^^^^^^^^^^^^^
+    ...<14 lines>...
+        cache_policy=self.cache_policy,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/pregel/_algo.py", line 469, in prepare_next_tasks
+    if task := prepare_single_task(
+               ~~~~~~~~~~~~~~~~~~~^
+        (PULL, name),
+        ^^^^^^^^^^^^^
+    ...<17 lines>...
+        retry_policy=retry_policy,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ):
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/pregel/_algo.py", line 615, in prepare_single_task
+    val = _proc_input(
+        proc,
+    ...<4 lines>...
+        scratchpad=scratchpad,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/pregel/_algo.py", line 1184, in _proc_input
+    val = proc.mapper(val)
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/graph/state.py", line 1534, in _coerce_state
+    return schema(**input)
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/pydantic/main.py", line 250, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 1 validation error for IngestState
+metadata
+  Input should be a valid dictionary [type=dict_type, input_value='{"tag":"smoke"}', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/dict_type
+Before task with name 'chunk' and path '('__pregel_pull', 'chunk')'
+2026-04-06 22:18:22 | INFO | api.main | http_request method=POST path=/api/ingest status=500 duration_ms=5
+2026-04-06 22:18:23 | INFO | __name__ | query_start stream=False query_len=14
+2026-04-06 22:18:23 | ERROR | __name__ | query_failed stream=False error='OpenAIEmbeddings' object has no attribute 'vector'
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/api/routes/query.py", line 22, in query
+    state = services["query_graph"].invoke({"query":req.query})
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/pregel/main.py", line 3309, in invoke
+    for chunk in self.stream(
+                 ~~~~~~~~~~~^
+        input,
+        ^^^^^^
+    ...<10 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    ):
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/pregel/main.py", line 2736, in stream
+    for _ in runner.tick(
+             ~~~~~~~~~~~^
+        [t for t in loop.tasks.values() if not t.writes],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        schedule_task=loop.accept_push,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ):
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/pregel/_runner.py", line 167, in tick
+    run_with_retry(
+    ~~~~~~~~~~~~~~^
+        t,
+        ^^
+    ...<10 lines>...
+        },
+        ^^
+    )
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/pregel/_retry.py", line 126, in run_with_retry
+    return task.proc.invoke(task.input, config)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/_internal/_runnable.py", line 656, in invoke
+    input = context.run(step.invoke, input, config, **kwargs)
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/_internal/_runnable.py", line 400, in invoke
+    ret = self.func(*args, **kwargs)
+  File "/Users/bohao/Desktop/AykAI/src/retrieval/query_graph.py", line 32, in vector_node
+    vector_rows = vector_retriever.retrieve(state.query,settings.retrieval_vector_top_k)
+  File "/Users/bohao/Desktop/AykAI/src/retrieval/vector_retriever.py", line 14, in retrieve
+    query_vector = self.embeddings.vector(query)
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/pydantic/main.py", line 1026, in __getattr__
+    raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+AttributeError: 'OpenAIEmbeddings' object has no attribute 'vector'
+During task with name 'vector' and id 'a0c535da-79d6-d183-6110-6edb4fbe25a8'
+2026-04-06 22:18:23 | INFO | api.main | http_request method=POST path=/api/query status=500 duration_ms=3
+2026-04-06 22:19:42 | INFO | api.routes.ingest | ingest_start doc_id=smoke-1 source=smoke content_len=32
+2026-04-06 22:19:42 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-06 22:19:45 | INFO | api.routes.ingest | ingest_done doc_id=smoke-1 inserted_parents=1 inserted_children=1
+2026-04-06 22:19:45 | INFO | api.main | http_request method=POST path=/api/ingest status=200 duration_ms=3457
+2026-04-06 22:19:53 | INFO | __name__ | query_start stream=False query_len=14
+2026-04-06 22:19:53 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-06 22:20:00 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-06 22:20:00 | INFO | __name__ | query_done stream=False references=5 answer_len=27
+2026-04-06 22:20:00 | INFO | api.main | http_request method=POST path=/api/query status=200 duration_ms=7436
+2026-04-06 22:20:17 | INFO | __name__ | query_start stream=True query_len=14
+2026-04-06 22:20:17 | INFO | api.main | http_request method=POST path=/api/query/stream status=200 duration_ms=0
+2026-04-06 22:20:17 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-06 22:20:17 | INFO | __name__ | query_stream_references count=5
+2026-04-06 22:20:18 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-06 22:24:06 | INFO | api.main | http_request method=GET path=/api/health status=200 duration_ms=144
+2026-04-06 22:24:07 | INFO | api.routes.ingest | ingest_start doc_id=smoke-2 source=smoke content_len=27
+2026-04-06 22:24:07 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-06 22:24:10 | INFO | api.routes.ingest | ingest_done doc_id=smoke-2 inserted_parents=1 inserted_children=1
+2026-04-06 22:24:10 | INFO | api.main | http_request method=POST path=/api/ingest status=200 duration_ms=3337
+2026-04-06 22:24:12 | INFO | api.routes.query | query_start stream=False query_len=14
+2026-04-06 22:24:12 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-06 22:24:23 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-06 22:24:23 | INFO | api.routes.query | query_done stream=False references=6 answer_len=27
+2026-04-06 22:24:23 | INFO | api.main | http_request method=POST path=/api/query status=200 duration_ms=11373
+2026-04-06 22:24:29 | INFO | api.routes.query | query_start stream=True query_len=14
+2026-04-06 22:24:29 | INFO | api.main | http_request method=POST path=/api/query/stream status=200 duration_ms=0
+2026-04-06 22:24:29 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-06 22:24:29 | INFO | api.routes.query | query_stream_references count=6
+2026-04-06 22:24:29 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-06 22:26:47 | INFO | api.main | http_request method=GET path=/api/health status=200 duration_ms=142
+2026-04-06 22:26:49 | INFO | api.routes.query | query_start stream=False query_len=14
+2026-04-06 22:26:50 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-06 22:26:59 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-06 22:26:59 | INFO | api.routes.query | query_done stream=False references=6 answer_len=27
+2026-04-06 22:26:59 | INFO | api.main | http_request method=POST path=/api/query status=200 duration_ms=9919
+2026-04-06 22:32:38 | INFO | api.main | http_request method=GET path=/api/health status=200 duration_ms=699
+2026-04-06 22:32:40 | INFO | api.routes.ingest | ingest_start doc_id=docker-check-1 source=docker-check content_len=39
+2026-04-06 22:32:41 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-06 22:32:44 | INFO | api.routes.ingest | ingest_done doc_id=docker-check-1 inserted_parents=1 inserted_children=1
+2026-04-06 22:32:44 | INFO | api.main | http_request method=POST path=/api/ingest status=200 duration_ms=4501
+2026-04-06 22:32:47 | INFO | api.routes.query | query_start stream=False query_len=14
+2026-04-06 22:32:47 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-06 22:32:53 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-06 22:32:53 | INFO | api.routes.query | query_done stream=False references=3 answer_len=27
+2026-04-06 22:32:53 | INFO | api.main | http_request method=POST path=/api/query status=200 duration_ms=5865
+2026-04-06 22:33:03 | INFO | api.routes.query | query_start stream=True query_len=14
+2026-04-06 22:33:03 | INFO | api.main | http_request method=POST path=/api/query/stream status=200 duration_ms=0
+2026-04-06 22:33:03 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-06 22:33:03 | INFO | api.routes.query | query_stream_references count=3
+2026-04-06 22:33:03 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-06 22:35:03 | INFO | api.main | http_request method=GET path=/api/health status=200 duration_ms=141
+2026-04-06 22:35:09 | INFO | api.routes.ingest | ingest_start doc_id=postman-demo-001 source=postman-demo content_len=143
+2026-04-06 22:35:10 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-06 22:35:13 | INFO | api.routes.ingest | ingest_done doc_id=postman-demo-001 inserted_parents=1 inserted_children=1
+2026-04-06 22:35:13 | INFO | api.main | http_request method=POST path=/api/ingest status=200 duration_ms=3246
+2026-04-06 22:35:14 | INFO | api.routes.query | query_start stream=False query_len=56
+2026-04-06 22:35:14 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-06 22:35:21 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-06 22:35:21 | INFO | api.routes.query | query_done stream=False references=4 answer_len=57
+2026-04-06 22:35:21 | INFO | api.main | http_request method=POST path=/api/query status=200 duration_ms=6681
+2026-04-06 22:35:29 | INFO | api.routes.query | query_start stream=True query_len=14
+2026-04-06 22:35:29 | INFO | api.main | http_request method=POST path=/api/query/stream status=200 duration_ms=0
+2026-04-06 22:35:29 | INFO | openai._base_client | Retrying request to /embeddings in 0.407215 seconds
+2026-04-06 22:35:30 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-06 22:35:30 | INFO | api.routes.query | query_stream_references count=4
+2026-04-06 22:35:30 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-06 22:37:51 | INFO | api.main | http_request method=GET path=/api/health status=200 duration_ms=2
+2026-04-06 22:39:26 | INFO | api.routes.ingest | ingest_start doc_id=postman-demo-001 source=postman-demo content_len=143
+2026-04-06 22:39:27 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-06 22:39:30 | INFO | api.routes.ingest | ingest_done doc_id=postman-demo-001 inserted_parents=1 inserted_children=1
+2026-04-06 22:39:30 | INFO | api.main | http_request method=POST path=/api/ingest status=200 duration_ms=3235
+2026-04-06 22:40:21 | INFO | api.routes.query | query_start stream=False query_len=56
+2026-04-06 22:40:21 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-06 22:40:30 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-06 22:40:30 | INFO | api.routes.query | query_done stream=False references=5 answer_len=57
+2026-04-06 22:40:30 | INFO | api.main | http_request method=POST path=/api/query status=200 duration_ms=9530
+2026-04-06 22:41:15 | INFO | api.main | http_request method=POST path=/api/query/stream status=422 duration_ms=0
+2026-04-06 22:41:23 | INFO | api.routes.query | query_start stream=True query_len=14
+2026-04-06 22:41:23 | INFO | api.main | http_request method=POST path=/api/query/stream status=200 duration_ms=1
+2026-04-06 22:41:23 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-06 22:41:23 | INFO | api.routes.query | query_stream_references count=5
+2026-04-06 22:41:23 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-06 22:41:33 | INFO | api.routes.query | query_stream_done references=5 answer_len=111
+2026-04-08 20:54:16 | INFO | api.routes.ingest | ingest_start doc_id=doc-debug-1 source=debug content_len=33
+2026-04-08 20:54:27 | INFO | api.routes.query | query_start stream=False query_len=10
+2026-04-08 20:54:37 | INFO | api.routes.query | query_stream_start query_len=11
+2026-04-08 20:57:13 | INFO | api.main | http_request method=GET path=/api/health status=200 duration_ms=0
+2026-04-08 20:57:13 | INFO | api.routes.ingest | ingest_start doc_id=doc-debug-1 source=debug content_len=33
+2026-04-08 20:57:24 | INFO | api.routes.query | query_start stream=False query_len=10
+2026-04-08 20:57:34 | INFO | api.routes.query | query_stream_start query_len=11
+2026-04-08 21:00:03 | INFO | api.main | http_request method=GET path=/api/health status=200 duration_ms=1
+2026-04-08 21:00:03 | INFO | api.routes.ingest | ingest_start doc_id=doc-debug-2 source=debug content_len=51
+2026-04-08 21:00:03 | INFO | api.routes.query | query_start stream=False query_len=10
+2026-04-08 21:00:04 | INFO | api.routes.query | query_stream_start query_len=11
+2026-04-08 21:01:50 | INFO | api.main | http_request method=GET path=/api/health status=200 duration_ms=0
+2026-04-08 21:01:50 | INFO | api.routes.ingest | ingest_start doc_id=doc-debug-3 source=debug content_len=60
+2026-04-08 21:01:51 | INFO | api.routes.query | query_start stream=False query_len=10
+2026-04-08 21:01:51 | INFO | api.routes.query | query_stream_start query_len=11
+2026-04-08 21:05:21 | INFO | api.main | http_request method=GET path=/api/health status=200 duration_ms=0
+2026-04-08 21:05:21 | INFO | api.routes.ingest | ingest_start doc_id=doc-debug-4 source=debug content_len=56
+2026-04-08 21:05:21 | INFO | api.routes.query | query_start stream=False query_len=10
+2026-04-08 21:05:21 | INFO | api.routes.query | query_stream_start query_len=11
+2026-04-08 21:06:21 | INFO | api.main | http_request method=GET path=/api/health status=200 duration_ms=0
+2026-04-08 21:06:21 | INFO | api.routes.ingest | ingest_start doc_id=doc-debug-5 source=debug content_len=48
+2026-04-08 21:06:21 | INFO | elastic_transport.transport | HEAD http://localhost:9200/rag_child_chunks [status:N/A duration:0.000s]
+2026-04-08 21:06:21 | WARNING | elastic_transport.node_pool | Node <Urllib3HttpNode(http://localhost:9200)> has failed for 1 times in a row, putting on 1 second timeout
+2026-04-08 21:06:21 | WARNING | elastic_transport.transport | Retrying request after failure (attempt 0 of 3)
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+        (self._dns_host, self.port),
+    ...<2 lines>...
+        socket_options=self.socket_options,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 85, in create_connection
+    raise err
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 73, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_node/_http_urllib3.py", line 167, in perform_request
+    response = self.pool.urlopen(
+        method,
+    ...<4 lines>...
+        **kw,  # type: ignore[arg-type]
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/retry.py", line 465, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+    ~~~~~~~~~~~~^
+        method,
+        ^^^^^^^
+    ...<6 lines>...
+        enforce_content_length=enforce_content_length,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1353, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1113, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1057, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 331, in connect
+    self.sock = self._new_conn()
+                ~~~~~~~~~~~~~~^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 219, in _new_conn
+    raise NewConnectionError(
+        self, f"Failed to establish a new connection: {e}"
+    ) from e
+urllib3.exceptions.NewConnectionError: HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_transport.py", line 344, in perform_request
+    resp = node.perform_request(
+        method,
+    ...<3 lines>...
+        request_timeout=request_timeout,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_node/_http_urllib3.py", line 202, in perform_request
+    raise err from e
+elastic_transport.ConnectionError: Connection error caused by: NewConnectionError(HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused)
+2026-04-08 21:06:21 | INFO | elastic_transport.transport | HEAD http://localhost:9200/rag_child_chunks [status:N/A duration:0.000s]
+2026-04-08 21:06:21 | WARNING | elastic_transport.node_pool | Node <Urllib3HttpNode(http://localhost:9200)> has failed for 2 times in a row, putting on 2 second timeout
+2026-04-08 21:06:21 | WARNING | elastic_transport.transport | Retrying request after failure (attempt 1 of 3)
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+        (self._dns_host, self.port),
+    ...<2 lines>...
+        socket_options=self.socket_options,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 85, in create_connection
+    raise err
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 73, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_node/_http_urllib3.py", line 167, in perform_request
+    response = self.pool.urlopen(
+        method,
+    ...<4 lines>...
+        **kw,  # type: ignore[arg-type]
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/retry.py", line 465, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+    ~~~~~~~~~~~~^
+        method,
+        ^^^^^^^
+    ...<6 lines>...
+        enforce_content_length=enforce_content_length,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1353, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1113, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1057, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 331, in connect
+    self.sock = self._new_conn()
+                ~~~~~~~~~~~~~~^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 219, in _new_conn
+    raise NewConnectionError(
+        self, f"Failed to establish a new connection: {e}"
+    ) from e
+urllib3.exceptions.NewConnectionError: HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_transport.py", line 344, in perform_request
+    resp = node.perform_request(
+        method,
+    ...<3 lines>...
+        request_timeout=request_timeout,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_node/_http_urllib3.py", line 202, in perform_request
+    raise err from e
+elastic_transport.ConnectionError: Connection error caused by: NewConnectionError(HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused)
+2026-04-08 21:06:21 | INFO | elastic_transport.transport | HEAD http://localhost:9200/rag_child_chunks [status:N/A duration:0.000s]
+2026-04-08 21:06:21 | WARNING | elastic_transport.node_pool | Node <Urllib3HttpNode(http://localhost:9200)> has failed for 3 times in a row, putting on 4 second timeout
+2026-04-08 21:06:21 | WARNING | elastic_transport.transport | Retrying request after failure (attempt 2 of 3)
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+        (self._dns_host, self.port),
+    ...<2 lines>...
+        socket_options=self.socket_options,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 85, in create_connection
+    raise err
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 73, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_node/_http_urllib3.py", line 167, in perform_request
+    response = self.pool.urlopen(
+        method,
+    ...<4 lines>...
+        **kw,  # type: ignore[arg-type]
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/retry.py", line 465, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+    ~~~~~~~~~~~~^
+        method,
+        ^^^^^^^
+    ...<6 lines>...
+        enforce_content_length=enforce_content_length,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1353, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1113, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1057, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 331, in connect
+    self.sock = self._new_conn()
+                ~~~~~~~~~~~~~~^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 219, in _new_conn
+    raise NewConnectionError(
+        self, f"Failed to establish a new connection: {e}"
+    ) from e
+urllib3.exceptions.NewConnectionError: HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_transport.py", line 344, in perform_request
+    resp = node.perform_request(
+        method,
+    ...<3 lines>...
+        request_timeout=request_timeout,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_node/_http_urllib3.py", line 202, in perform_request
+    raise err from e
+elastic_transport.ConnectionError: Connection error caused by: NewConnectionError(HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused)
+2026-04-08 21:06:21 | INFO | elastic_transport.transport | HEAD http://localhost:9200/rag_child_chunks [status:N/A duration:0.000s]
+2026-04-08 21:06:21 | WARNING | elastic_transport.node_pool | Node <Urllib3HttpNode(http://localhost:9200)> has failed for 4 times in a row, putting on 8 second timeout
+2026-04-08 21:06:21 | INFO | api.routes.query | query_start stream=False query_len=10
+2026-04-08 21:06:21 | INFO | elastic_transport.transport | HEAD http://localhost:9200/rag_child_chunks [status:N/A duration:0.000s]
+2026-04-08 21:06:21 | WARNING | elastic_transport.node_pool | Node <Urllib3HttpNode(http://localhost:9200)> has failed for 1 times in a row, putting on 1 second timeout
+2026-04-08 21:06:21 | WARNING | elastic_transport.transport | Retrying request after failure (attempt 0 of 3)
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+        (self._dns_host, self.port),
+    ...<2 lines>...
+        socket_options=self.socket_options,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 85, in create_connection
+    raise err
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 73, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_node/_http_urllib3.py", line 167, in perform_request
+    response = self.pool.urlopen(
+        method,
+    ...<4 lines>...
+        **kw,  # type: ignore[arg-type]
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/retry.py", line 465, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+    ~~~~~~~~~~~~^
+        method,
+        ^^^^^^^
+    ...<6 lines>...
+        enforce_content_length=enforce_content_length,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1353, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1113, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1057, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 331, in connect
+    self.sock = self._new_conn()
+                ~~~~~~~~~~~~~~^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 219, in _new_conn
+    raise NewConnectionError(
+        self, f"Failed to establish a new connection: {e}"
+    ) from e
+urllib3.exceptions.NewConnectionError: HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_transport.py", line 344, in perform_request
+    resp = node.perform_request(
+        method,
+    ...<3 lines>...
+        request_timeout=request_timeout,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_node/_http_urllib3.py", line 202, in perform_request
+    raise err from e
+elastic_transport.ConnectionError: Connection error caused by: NewConnectionError(HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused)
+2026-04-08 21:06:21 | INFO | elastic_transport.transport | HEAD http://localhost:9200/rag_child_chunks [status:N/A duration:0.000s]
+2026-04-08 21:06:21 | WARNING | elastic_transport.node_pool | Node <Urllib3HttpNode(http://localhost:9200)> has failed for 2 times in a row, putting on 2 second timeout
+2026-04-08 21:06:21 | WARNING | elastic_transport.transport | Retrying request after failure (attempt 1 of 3)
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+        (self._dns_host, self.port),
+    ...<2 lines>...
+        socket_options=self.socket_options,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 85, in create_connection
+    raise err
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 73, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_node/_http_urllib3.py", line 167, in perform_request
+    response = self.pool.urlopen(
+        method,
+    ...<4 lines>...
+        **kw,  # type: ignore[arg-type]
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/retry.py", line 465, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+    ~~~~~~~~~~~~^
+        method,
+        ^^^^^^^
+    ...<6 lines>...
+        enforce_content_length=enforce_content_length,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1353, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1113, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1057, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 331, in connect
+    self.sock = self._new_conn()
+                ~~~~~~~~~~~~~~^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 219, in _new_conn
+    raise NewConnectionError(
+        self, f"Failed to establish a new connection: {e}"
+    ) from e
+urllib3.exceptions.NewConnectionError: HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_transport.py", line 344, in perform_request
+    resp = node.perform_request(
+        method,
+    ...<3 lines>...
+        request_timeout=request_timeout,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_node/_http_urllib3.py", line 202, in perform_request
+    raise err from e
+elastic_transport.ConnectionError: Connection error caused by: NewConnectionError(HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused)
+2026-04-08 21:06:21 | INFO | elastic_transport.transport | HEAD http://localhost:9200/rag_child_chunks [status:N/A duration:0.000s]
+2026-04-08 21:06:21 | WARNING | elastic_transport.node_pool | Node <Urllib3HttpNode(http://localhost:9200)> has failed for 3 times in a row, putting on 4 second timeout
+2026-04-08 21:06:21 | WARNING | elastic_transport.transport | Retrying request after failure (attempt 2 of 3)
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+        (self._dns_host, self.port),
+    ...<2 lines>...
+        socket_options=self.socket_options,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 85, in create_connection
+    raise err
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 73, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_node/_http_urllib3.py", line 167, in perform_request
+    response = self.pool.urlopen(
+        method,
+    ...<4 lines>...
+        **kw,  # type: ignore[arg-type]
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/retry.py", line 465, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+    ~~~~~~~~~~~~^
+        method,
+        ^^^^^^^
+    ...<6 lines>...
+        enforce_content_length=enforce_content_length,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1353, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1113, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1057, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 331, in connect
+    self.sock = self._new_conn()
+                ~~~~~~~~~~~~~~^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 219, in _new_conn
+    raise NewConnectionError(
+        self, f"Failed to establish a new connection: {e}"
+    ) from e
+urllib3.exceptions.NewConnectionError: HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_transport.py", line 344, in perform_request
+    resp = node.perform_request(
+        method,
+    ...<3 lines>...
+        request_timeout=request_timeout,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_node/_http_urllib3.py", line 202, in perform_request
+    raise err from e
+elastic_transport.ConnectionError: Connection error caused by: NewConnectionError(HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused)
+2026-04-08 21:06:21 | INFO | elastic_transport.transport | HEAD http://localhost:9200/rag_child_chunks [status:N/A duration:0.000s]
+2026-04-08 21:06:21 | WARNING | elastic_transport.node_pool | Node <Urllib3HttpNode(http://localhost:9200)> has failed for 4 times in a row, putting on 8 second timeout
+2026-04-08 21:06:21 | INFO | api.routes.query | query_stream_start query_len=11
+2026-04-08 21:06:21 | INFO | elastic_transport.transport | HEAD http://localhost:9200/rag_child_chunks [status:N/A duration:0.000s]
+2026-04-08 21:06:21 | WARNING | elastic_transport.node_pool | Node <Urllib3HttpNode(http://localhost:9200)> has failed for 1 times in a row, putting on 1 second timeout
+2026-04-08 21:06:21 | WARNING | elastic_transport.transport | Retrying request after failure (attempt 0 of 3)
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+        (self._dns_host, self.port),
+    ...<2 lines>...
+        socket_options=self.socket_options,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 85, in create_connection
+    raise err
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 73, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_node/_http_urllib3.py", line 167, in perform_request
+    response = self.pool.urlopen(
+        method,
+    ...<4 lines>...
+        **kw,  # type: ignore[arg-type]
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/retry.py", line 465, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+    ~~~~~~~~~~~~^
+        method,
+        ^^^^^^^
+    ...<6 lines>...
+        enforce_content_length=enforce_content_length,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1353, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1113, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1057, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 331, in connect
+    self.sock = self._new_conn()
+                ~~~~~~~~~~~~~~^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 219, in _new_conn
+    raise NewConnectionError(
+        self, f"Failed to establish a new connection: {e}"
+    ) from e
+urllib3.exceptions.NewConnectionError: HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_transport.py", line 344, in perform_request
+    resp = node.perform_request(
+        method,
+    ...<3 lines>...
+        request_timeout=request_timeout,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_node/_http_urllib3.py", line 202, in perform_request
+    raise err from e
+elastic_transport.ConnectionError: Connection error caused by: NewConnectionError(HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused)
+2026-04-08 21:06:21 | INFO | elastic_transport.transport | HEAD http://localhost:9200/rag_child_chunks [status:N/A duration:0.000s]
+2026-04-08 21:06:21 | WARNING | elastic_transport.node_pool | Node <Urllib3HttpNode(http://localhost:9200)> has failed for 2 times in a row, putting on 2 second timeout
+2026-04-08 21:06:21 | WARNING | elastic_transport.transport | Retrying request after failure (attempt 1 of 3)
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+        (self._dns_host, self.port),
+    ...<2 lines>...
+        socket_options=self.socket_options,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 85, in create_connection
+    raise err
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 73, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_node/_http_urllib3.py", line 167, in perform_request
+    response = self.pool.urlopen(
+        method,
+    ...<4 lines>...
+        **kw,  # type: ignore[arg-type]
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/retry.py", line 465, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+    ~~~~~~~~~~~~^
+        method,
+        ^^^^^^^
+    ...<6 lines>...
+        enforce_content_length=enforce_content_length,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1353, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1113, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1057, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 331, in connect
+    self.sock = self._new_conn()
+                ~~~~~~~~~~~~~~^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 219, in _new_conn
+    raise NewConnectionError(
+        self, f"Failed to establish a new connection: {e}"
+    ) from e
+urllib3.exceptions.NewConnectionError: HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_transport.py", line 344, in perform_request
+    resp = node.perform_request(
+        method,
+    ...<3 lines>...
+        request_timeout=request_timeout,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_node/_http_urllib3.py", line 202, in perform_request
+    raise err from e
+elastic_transport.ConnectionError: Connection error caused by: NewConnectionError(HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused)
+2026-04-08 21:06:21 | INFO | elastic_transport.transport | HEAD http://localhost:9200/rag_child_chunks [status:N/A duration:0.000s]
+2026-04-08 21:06:21 | WARNING | elastic_transport.node_pool | Node <Urllib3HttpNode(http://localhost:9200)> has failed for 3 times in a row, putting on 4 second timeout
+2026-04-08 21:06:21 | WARNING | elastic_transport.transport | Retrying request after failure (attempt 2 of 3)
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+        (self._dns_host, self.port),
+    ...<2 lines>...
+        socket_options=self.socket_options,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 85, in create_connection
+    raise err
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 73, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_node/_http_urllib3.py", line 167, in perform_request
+    response = self.pool.urlopen(
+        method,
+    ...<4 lines>...
+        **kw,  # type: ignore[arg-type]
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/retry.py", line 465, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+    ~~~~~~~~~~~~^
+        method,
+        ^^^^^^^
+    ...<6 lines>...
+        enforce_content_length=enforce_content_length,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1353, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1113, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1057, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 331, in connect
+    self.sock = self._new_conn()
+                ~~~~~~~~~~~~~~^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 219, in _new_conn
+    raise NewConnectionError(
+        self, f"Failed to establish a new connection: {e}"
+    ) from e
+urllib3.exceptions.NewConnectionError: HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_transport.py", line 344, in perform_request
+    resp = node.perform_request(
+        method,
+    ...<3 lines>...
+        request_timeout=request_timeout,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_node/_http_urllib3.py", line 202, in perform_request
+    raise err from e
+elastic_transport.ConnectionError: Connection error caused by: NewConnectionError(HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused)
+2026-04-08 21:06:21 | INFO | elastic_transport.transport | HEAD http://localhost:9200/rag_child_chunks [status:N/A duration:0.000s]
+2026-04-08 21:06:21 | WARNING | elastic_transport.node_pool | Node <Urllib3HttpNode(http://localhost:9200)> has failed for 4 times in a row, putting on 8 second timeout
+2026-04-08 21:07:44 | INFO | api.main | http_request method=GET path=/api/health status=200 duration_ms=0
+2026-04-08 21:07:44 | INFO | api.routes.ingest | ingest_start doc_id=doc-debug-6 source=debug content_len=52
+2026-04-08 21:07:44 | INFO | elastic_transport.transport | HEAD http://localhost:9200/rag_child_chunks [status:N/A duration:0.000s]
+2026-04-08 21:07:44 | WARNING | elastic_transport.node_pool | Node <Urllib3HttpNode(http://localhost:9200)> has failed for 1 times in a row, putting on 1 second timeout
+2026-04-08 21:07:44 | WARNING | elastic_transport.transport | Retrying request after failure (attempt 0 of 3)
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+        (self._dns_host, self.port),
+    ...<2 lines>...
+        socket_options=self.socket_options,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 85, in create_connection
+    raise err
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 73, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_node/_http_urllib3.py", line 167, in perform_request
+    response = self.pool.urlopen(
+        method,
+    ...<4 lines>...
+        **kw,  # type: ignore[arg-type]
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/retry.py", line 465, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+    ~~~~~~~~~~~~^
+        method,
+        ^^^^^^^
+    ...<6 lines>...
+        enforce_content_length=enforce_content_length,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1353, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1113, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1057, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 331, in connect
+    self.sock = self._new_conn()
+                ~~~~~~~~~~~~~~^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 219, in _new_conn
+    raise NewConnectionError(
+        self, f"Failed to establish a new connection: {e}"
+    ) from e
+urllib3.exceptions.NewConnectionError: HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_transport.py", line 344, in perform_request
+    resp = node.perform_request(
+        method,
+    ...<3 lines>...
+        request_timeout=request_timeout,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_node/_http_urllib3.py", line 202, in perform_request
+    raise err from e
+elastic_transport.ConnectionError: Connection error caused by: NewConnectionError(HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused)
+2026-04-08 21:07:44 | INFO | elastic_transport.transport | HEAD http://localhost:9200/rag_child_chunks [status:N/A duration:0.000s]
+2026-04-08 21:07:44 | WARNING | elastic_transport.node_pool | Node <Urllib3HttpNode(http://localhost:9200)> has failed for 2 times in a row, putting on 2 second timeout
+2026-04-08 21:07:44 | WARNING | elastic_transport.transport | Retrying request after failure (attempt 1 of 3)
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+        (self._dns_host, self.port),
+    ...<2 lines>...
+        socket_options=self.socket_options,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 85, in create_connection
+    raise err
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 73, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_node/_http_urllib3.py", line 167, in perform_request
+    response = self.pool.urlopen(
+        method,
+    ...<4 lines>...
+        **kw,  # type: ignore[arg-type]
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/retry.py", line 465, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+    ~~~~~~~~~~~~^
+        method,
+        ^^^^^^^
+    ...<6 lines>...
+        enforce_content_length=enforce_content_length,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1353, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1113, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1057, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 331, in connect
+    self.sock = self._new_conn()
+                ~~~~~~~~~~~~~~^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 219, in _new_conn
+    raise NewConnectionError(
+        self, f"Failed to establish a new connection: {e}"
+    ) from e
+urllib3.exceptions.NewConnectionError: HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_transport.py", line 344, in perform_request
+    resp = node.perform_request(
+        method,
+    ...<3 lines>...
+        request_timeout=request_timeout,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_node/_http_urllib3.py", line 202, in perform_request
+    raise err from e
+elastic_transport.ConnectionError: Connection error caused by: NewConnectionError(HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused)
+2026-04-08 21:07:44 | INFO | elastic_transport.transport | HEAD http://localhost:9200/rag_child_chunks [status:N/A duration:0.000s]
+2026-04-08 21:07:44 | WARNING | elastic_transport.node_pool | Node <Urllib3HttpNode(http://localhost:9200)> has failed for 3 times in a row, putting on 4 second timeout
+2026-04-08 21:07:44 | WARNING | elastic_transport.transport | Retrying request after failure (attempt 2 of 3)
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+        (self._dns_host, self.port),
+    ...<2 lines>...
+        socket_options=self.socket_options,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 85, in create_connection
+    raise err
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 73, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_node/_http_urllib3.py", line 167, in perform_request
+    response = self.pool.urlopen(
+        method,
+    ...<4 lines>...
+        **kw,  # type: ignore[arg-type]
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/retry.py", line 465, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+    ~~~~~~~~~~~~^
+        method,
+        ^^^^^^^
+    ...<6 lines>...
+        enforce_content_length=enforce_content_length,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1353, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1113, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1057, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 331, in connect
+    self.sock = self._new_conn()
+                ~~~~~~~~~~~~~~^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 219, in _new_conn
+    raise NewConnectionError(
+        self, f"Failed to establish a new connection: {e}"
+    ) from e
+urllib3.exceptions.NewConnectionError: HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_transport.py", line 344, in perform_request
+    resp = node.perform_request(
+        method,
+    ...<3 lines>...
+        request_timeout=request_timeout,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_node/_http_urllib3.py", line 202, in perform_request
+    raise err from e
+elastic_transport.ConnectionError: Connection error caused by: NewConnectionError(HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused)
+2026-04-08 21:07:44 | INFO | elastic_transport.transport | HEAD http://localhost:9200/rag_child_chunks [status:N/A duration:0.000s]
+2026-04-08 21:07:44 | WARNING | elastic_transport.node_pool | Node <Urllib3HttpNode(http://localhost:9200)> has failed for 4 times in a row, putting on 8 second timeout
+2026-04-08 21:07:44 | WARNING | api.dependencies | elasticsearch_unavailable_fallback_to_local_bm25 error=Connection error caused by: ConnectionError(Connection error caused by: NewConnectionError(HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused))
+2026-04-08 21:07:46 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:07:50 | DEBUG | jieba | Building prefix dict from the default dictionary ...
+2026-04-08 21:07:50 | DEBUG | jieba | Dumping model to file cache /var/folders/qs/5st8bn617_9bcmqhspc9m1n00000gn/T/jieba.cache
+2026-04-08 21:07:50 | DEBUG | jieba | Loading model cost 0.200 seconds.
+2026-04-08 21:07:50 | DEBUG | jieba | Prefix dict has been built successfully.
+2026-04-08 21:07:50 | INFO | api.routes.ingest | ingest_done doc_id=doc-debug-6 inserted_parents=1 inserted_children=1
+2026-04-08 21:07:50 | INFO | api.main | http_request method=POST path=/api/ingest status=200 duration_ms=5986
+2026-04-08 21:07:50 | INFO | api.routes.query | query_start stream=False query_len=10
+2026-04-08 21:08:03 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-08 21:08:03 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:08:03 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:08:04 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:08:04 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:08:04 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:08:04 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:08:04 | ERROR | api.routes.query | query_failed stream=False error='PostgresParentStore' object has no attribute 'fetch_parents'
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/api/routes/query.py", line 24, in query
+    state = await run_in_threadpool(services["query_graph"].invoke, {"query": req.query})
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/starlette/concurrency.py", line 32, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/anyio/to_thread.py", line 63, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 2518, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 1002, in run
+    result = context.run(func, *args)
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/pregel/main.py", line 3309, in invoke
+    for chunk in self.stream(
+                 ~~~~~~~~~~~^
+        input,
+        ^^^^^^
+    ...<10 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    ):
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/pregel/main.py", line 2736, in stream
+    for _ in runner.tick(
+             ~~~~~~~~~~~^
+        [t for t in loop.tasks.values() if not t.writes],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        schedule_task=loop.accept_push,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ):
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/pregel/_runner.py", line 167, in tick
+    run_with_retry(
+    ~~~~~~~~~~~~~~^
+        t,
+        ^^
+    ...<10 lines>...
+        },
+        ^^
+    )
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/pregel/_retry.py", line 126, in run_with_retry
+    return task.proc.invoke(task.input, config)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/_internal/_runnable.py", line 656, in invoke
+    input = context.run(step.invoke, input, config, **kwargs)
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/_internal/_runnable.py", line 400, in invoke
+    ret = self.func(*args, **kwargs)
+  File "/Users/bohao/Desktop/AykAI/src/retrieval/query_graph.py", line 87, in expand_parent_node
+    parent_map = parent_store.fetch_parents(parent_ids)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'PostgresParentStore' object has no attribute 'fetch_parents'. Did you mean: 'fetch_parent'?
+During task with name 'expand_parent' and id '89097145-bf30-7979-7612-065a48b9df1b'
+2026-04-08 21:08:04 | INFO | api.main | http_request method=POST path=/api/query status=500 duration_ms=13992
+2026-04-08 21:08:04 | INFO | api.routes.query | query_stream_start query_len=11
+2026-04-08 21:08:04 | INFO | api.main | http_request method=POST path=/api/query/stream status=200 duration_ms=0
+2026-04-08 21:08:32 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-08 21:08:33 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:08:33 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:08:33 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:08:33 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:08:33 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:08:33 | ERROR | api.routes.query | query_stream_failed error='PostgresParentStore' object has no attribute 'fetch_parents'
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/api/routes/query.py", line 44, in event_stream
+    state = await run_in_threadpool(services["query_graph"].invoke, {"query": req.query, "skip_generate": True})
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/starlette/concurrency.py", line 32, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/anyio/to_thread.py", line 63, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 2518, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 1002, in run
+    result = context.run(func, *args)
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/pregel/main.py", line 3309, in invoke
+    for chunk in self.stream(
+                 ~~~~~~~~~~~^
+        input,
+        ^^^^^^
+    ...<10 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    ):
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/pregel/main.py", line 2736, in stream
+    for _ in runner.tick(
+             ~~~~~~~~~~~^
+        [t for t in loop.tasks.values() if not t.writes],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        schedule_task=loop.accept_push,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ):
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/pregel/_runner.py", line 167, in tick
+    run_with_retry(
+    ~~~~~~~~~~~~~~^
+        t,
+        ^^
+    ...<10 lines>...
+        },
+        ^^
+    )
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/pregel/_retry.py", line 126, in run_with_retry
+    return task.proc.invoke(task.input, config)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/_internal/_runnable.py", line 656, in invoke
+    input = context.run(step.invoke, input, config, **kwargs)
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/_internal/_runnable.py", line 400, in invoke
+    ret = self.func(*args, **kwargs)
+  File "/Users/bohao/Desktop/AykAI/src/retrieval/query_graph.py", line 87, in expand_parent_node
+    parent_map = parent_store.fetch_parents(parent_ids)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'PostgresParentStore' object has no attribute 'fetch_parents'. Did you mean: 'fetch_parent'?
+During task with name 'expand_parent' and id '26089842-0f92-1c4f-306a-36fef83d4388'
+2026-04-08 21:09:40 | INFO | api.routes.query | query_start stream=False query_len=10
+2026-04-08 21:09:40 | INFO | elastic_transport.transport | HEAD http://localhost:9200/rag_child_chunks [status:N/A duration:0.000s]
+2026-04-08 21:09:40 | WARNING | elastic_transport.node_pool | Node <Urllib3HttpNode(http://localhost:9200)> has failed for 1 times in a row, putting on 1 second timeout
+2026-04-08 21:09:40 | WARNING | elastic_transport.transport | Retrying request after failure (attempt 0 of 3)
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+        (self._dns_host, self.port),
+    ...<2 lines>...
+        socket_options=self.socket_options,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 85, in create_connection
+    raise err
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 73, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_node/_http_urllib3.py", line 167, in perform_request
+    response = self.pool.urlopen(
+        method,
+    ...<4 lines>...
+        **kw,  # type: ignore[arg-type]
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/retry.py", line 465, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+    ~~~~~~~~~~~~^
+        method,
+        ^^^^^^^
+    ...<6 lines>...
+        enforce_content_length=enforce_content_length,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1353, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1113, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1057, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 331, in connect
+    self.sock = self._new_conn()
+                ~~~~~~~~~~~~~~^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 219, in _new_conn
+    raise NewConnectionError(
+        self, f"Failed to establish a new connection: {e}"
+    ) from e
+urllib3.exceptions.NewConnectionError: HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_transport.py", line 344, in perform_request
+    resp = node.perform_request(
+        method,
+    ...<3 lines>...
+        request_timeout=request_timeout,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_node/_http_urllib3.py", line 202, in perform_request
+    raise err from e
+elastic_transport.ConnectionError: Connection error caused by: NewConnectionError(HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused)
+2026-04-08 21:09:40 | INFO | elastic_transport.transport | HEAD http://localhost:9200/rag_child_chunks [status:N/A duration:0.000s]
+2026-04-08 21:09:40 | WARNING | elastic_transport.node_pool | Node <Urllib3HttpNode(http://localhost:9200)> has failed for 2 times in a row, putting on 2 second timeout
+2026-04-08 21:09:40 | WARNING | elastic_transport.transport | Retrying request after failure (attempt 1 of 3)
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+        (self._dns_host, self.port),
+    ...<2 lines>...
+        socket_options=self.socket_options,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 85, in create_connection
+    raise err
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 73, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_node/_http_urllib3.py", line 167, in perform_request
+    response = self.pool.urlopen(
+        method,
+    ...<4 lines>...
+        **kw,  # type: ignore[arg-type]
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/retry.py", line 465, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+    ~~~~~~~~~~~~^
+        method,
+        ^^^^^^^
+    ...<6 lines>...
+        enforce_content_length=enforce_content_length,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1353, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1113, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1057, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 331, in connect
+    self.sock = self._new_conn()
+                ~~~~~~~~~~~~~~^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 219, in _new_conn
+    raise NewConnectionError(
+        self, f"Failed to establish a new connection: {e}"
+    ) from e
+urllib3.exceptions.NewConnectionError: HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_transport.py", line 344, in perform_request
+    resp = node.perform_request(
+        method,
+    ...<3 lines>...
+        request_timeout=request_timeout,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_node/_http_urllib3.py", line 202, in perform_request
+    raise err from e
+elastic_transport.ConnectionError: Connection error caused by: NewConnectionError(HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused)
+2026-04-08 21:09:40 | INFO | elastic_transport.transport | HEAD http://localhost:9200/rag_child_chunks [status:N/A duration:0.000s]
+2026-04-08 21:09:40 | WARNING | elastic_transport.node_pool | Node <Urllib3HttpNode(http://localhost:9200)> has failed for 3 times in a row, putting on 4 second timeout
+2026-04-08 21:09:40 | WARNING | elastic_transport.transport | Retrying request after failure (attempt 2 of 3)
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+        (self._dns_host, self.port),
+    ...<2 lines>...
+        socket_options=self.socket_options,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 85, in create_connection
+    raise err
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 73, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_node/_http_urllib3.py", line 167, in perform_request
+    response = self.pool.urlopen(
+        method,
+    ...<4 lines>...
+        **kw,  # type: ignore[arg-type]
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/retry.py", line 465, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+    ~~~~~~~~~~~~^
+        method,
+        ^^^^^^^
+    ...<6 lines>...
+        enforce_content_length=enforce_content_length,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1353, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1113, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "/Users/bohao/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/http/client.py", line 1057, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 331, in connect
+    self.sock = self._new_conn()
+                ~~~~~~~~~~~~~~^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 219, in _new_conn
+    raise NewConnectionError(
+        self, f"Failed to establish a new connection: {e}"
+    ) from e
+urllib3.exceptions.NewConnectionError: HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_transport.py", line 344, in perform_request
+    resp = node.perform_request(
+        method,
+    ...<3 lines>...
+        request_timeout=request_timeout,
+    )
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/elastic_transport/_node/_http_urllib3.py", line 202, in perform_request
+    raise err from e
+elastic_transport.ConnectionError: Connection error caused by: NewConnectionError(HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused)
+2026-04-08 21:09:40 | INFO | elastic_transport.transport | HEAD http://localhost:9200/rag_child_chunks [status:N/A duration:0.000s]
+2026-04-08 21:09:40 | WARNING | elastic_transport.node_pool | Node <Urllib3HttpNode(http://localhost:9200)> has failed for 4 times in a row, putting on 8 second timeout
+2026-04-08 21:09:40 | WARNING | api.dependencies | elasticsearch_unavailable_fallback_to_local_bm25 error=Connection error caused by: ConnectionError(Connection error caused by: NewConnectionError(HTTPConnection(host='localhost', port=9200): Failed to establish a new connection: [Errno 61] Connection refused))
+2026-04-08 21:09:57 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-08 21:09:57 | DEBUG | jieba | Building prefix dict from the default dictionary ...
+2026-04-08 21:09:57 | DEBUG | jieba | Loading model from cache /var/folders/qs/5st8bn617_9bcmqhspc9m1n00000gn/T/jieba.cache
+2026-04-08 21:09:57 | DEBUG | jieba | Loading model cost 0.260 seconds.
+2026-04-08 21:09:57 | DEBUG | jieba | Prefix dict has been built successfully.
+2026-04-08 21:09:57 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:09:57 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:09:57 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:09:57 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:09:57 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:09:57 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:10:10 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-08 21:10:10 | INFO | api.routes.query | query_done stream=False references=4 answer_len=90
+2026-04-08 21:10:10 | INFO | api.main | http_request method=POST path=/api/query status=200 duration_ms=29769
+2026-04-08 21:10:10 | INFO | api.routes.query | query_stream_start query_len=11
+2026-04-08 21:10:10 | INFO | api.main | http_request method=POST path=/api/query/stream status=200 duration_ms=1
+2026-04-08 21:12:24 | INFO | api.main | http_request method=GET path=/api/health status=200 duration_ms=1
+2026-04-08 21:12:24 | INFO | api.routes.ingest | ingest_start doc_id=doc-debug-7 source=debug content_len=45
+2026-04-08 21:12:24 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:12:27 | INFO | api.routes.ingest | ingest_done doc_id=doc-debug-7 inserted_parents=1 inserted_children=1
+2026-04-08 21:12:27 | INFO | api.main | http_request method=POST path=/api/ingest status=200 duration_ms=3258
+2026-04-08 21:12:27 | INFO | api.routes.query | query_start stream=False query_len=10
+2026-04-08 21:12:47 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-08 21:12:47 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:12:47 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:12:47 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:12:47 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:12:47 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:12:47 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:12:47 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:13:01 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-08 21:13:01 | INFO | api.routes.query | query_done stream=False references=5 answer_len=87
+2026-04-08 21:13:01 | INFO | api.main | http_request method=POST path=/api/query status=200 duration_ms=33227
+2026-04-08 21:13:01 | INFO | api.routes.query | query_stream_start query_len=11
+2026-04-08 21:13:01 | INFO | api.main | http_request method=POST path=/api/query/stream status=200 duration_ms=1
+2026-04-08 21:13:48 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-08 21:13:48 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:13:48 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:13:48 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:13:48 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:13:48 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:13:48 | INFO | api.routes.query | query_stream_references count=5
+2026-04-08 21:13:49 | INFO | api.routes.query | query_stream_start query_len=11
+2026-04-08 21:13:49 | INFO | api.main | http_request method=POST path=/api/query/stream status=200 duration_ms=0
+2026-04-08 21:14:17 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-08 21:14:17 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:14:17 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:14:17 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:14:17 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:14:17 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:14:17 | INFO | api.routes.query | query_stream_references count=5
+2026-04-08 21:14:18 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-08 21:14:30 | INFO | api.routes.query | query_stream_done references=5 answer_len=159
+2026-04-08 21:18:10 | INFO | api.routes.ingest | ingest_start doc_id=doc-es-check-1 source=es-check content_len=52
+2026-04-08 21:18:10 | INFO | elastic_transport.transport | HEAD http://localhost:9200/rag_child_chunks [status:400 duration:0.019s]
+2026-04-08 21:18:10 | WARNING | api.dependencies | elasticsearch_unavailable_fallback_to_local_bm25 error=BadRequestError(400, 'None')
+2026-04-08 21:18:10 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 21:18:13 | DEBUG | jieba | Building prefix dict from the default dictionary ...
+2026-04-08 21:18:13 | DEBUG | jieba | Loading model from cache /var/folders/qs/5st8bn617_9bcmqhspc9m1n00000gn/T/jieba.cache
+2026-04-08 21:18:13 | DEBUG | jieba | Loading model cost 0.215 seconds.
+2026-04-08 21:18:13 | DEBUG | jieba | Prefix dict has been built successfully.
+2026-04-08 21:18:13 | INFO | api.routes.ingest | ingest_done doc_id=doc-es-check-1 inserted_parents=1 inserted_children=1
+2026-04-08 21:18:13 | INFO | api.main | http_request method=POST path=/api/ingest status=200 duration_ms=3697
+2026-04-08 23:18:38 | INFO | api.routes.ingest | ingest_start doc_id=doc-es-check-2 source=es-check content_len=44
+2026-04-08 23:18:38 | INFO | elastic_transport.transport | HEAD http://localhost:9200/rag_child_chunks [status:404 duration:0.011s]
+2026-04-08 23:18:38 | INFO | elastic_transport.transport | PUT http://localhost:9200/rag_child_chunks [status:400 duration:0.038s]
+2026-04-08 23:18:38 | INFO | elastic_transport.transport | POST http://localhost:9200/rag_child_chunks/_search [status:404 duration:0.006s]
+2026-04-08 23:18:39 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 23:18:42 | DEBUG | jieba | Building prefix dict from the default dictionary ...
+2026-04-08 23:18:42 | DEBUG | jieba | Loading model from cache /var/folders/qs/5st8bn617_9bcmqhspc9m1n00000gn/T/jieba.cache
+2026-04-08 23:18:42 | DEBUG | jieba | Loading model cost 0.220 seconds.
+2026-04-08 23:18:42 | DEBUG | jieba | Prefix dict has been built successfully.
+2026-04-08 23:18:42 | INFO | api.routes.ingest | ingest_done doc_id=doc-es-check-2 inserted_parents=1 inserted_children=1
+2026-04-08 23:18:42 | INFO | api.main | http_request method=POST path=/api/ingest status=200 duration_ms=3879
+2026-04-08 23:20:32 | INFO | api.routes.ingest | ingest_start doc_id=doc-es-check-3 source=es-check content_len=44
+2026-04-08 23:20:32 | INFO | elastic_transport.transport | POST http://localhost:9200/_analyze [status:400 duration:0.013s]
+2026-04-08 23:20:32 | INFO | elastic_transport.transport | HEAD http://localhost:9200/rag_child_chunks [status:404 duration:0.001s]
+2026-04-08 23:20:32 | WARNING | src.persistence.elasticsearch_client | ik_tokenizer_unavailable_use_standard_analyzer
+2026-04-08 23:20:33 | INFO | elastic_transport.transport | PUT http://localhost:9200/rag_child_chunks [status:200 duration:0.147s]
+2026-04-08 23:20:33 | INFO | elastic_transport.transport | POST http://localhost:9200/rag_child_chunks/_search [status:200 duration:0.015s]
+2026-04-08 23:20:33 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 23:20:36 | DEBUG | jieba | Building prefix dict from the default dictionary ...
+2026-04-08 23:20:36 | DEBUG | jieba | Loading model from cache /var/folders/qs/5st8bn617_9bcmqhspc9m1n00000gn/T/jieba.cache
+2026-04-08 23:20:36 | DEBUG | jieba | Loading model cost 0.221 seconds.
+2026-04-08 23:20:36 | DEBUG | jieba | Prefix dict has been built successfully.
+2026-04-08 23:20:36 | INFO | api.routes.ingest | ingest_done doc_id=doc-es-check-3 inserted_parents=1 inserted_children=1
+2026-04-08 23:20:36 | INFO | api.main | http_request method=POST path=/api/ingest status=200 duration_ms=3882
+2026-04-08 23:21:23 | INFO | api.routes.ingest | ingest_start doc_id=doc-es-check-4 source=es-check content_len=46
+2026-04-08 23:21:23 | INFO | elastic_transport.transport | POST http://localhost:9200/_analyze [status:400 duration:0.006s]
+2026-04-08 23:21:23 | INFO | elastic_transport.transport | HEAD http://localhost:9200/rag_child_chunks [status:200 duration:0.002s]
+2026-04-08 23:21:23 | INFO | elastic_transport.transport | POST http://localhost:9200/rag_child_chunks/_search [status:200 duration:0.004s]
+2026-04-08 23:21:24 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 23:21:27 | ERROR | api.routes.ingest | ingest_failed doc_id=doc-es-check-4 error=ingest write failed at stage=elasticsearch: module 'config.settings' has no attribute 'elasticsearch_bulk_batch_size'
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/src/indexing/ingest_graph.py", line 41, in _run_with_retries
+    func(rows)
+    ~~~~^^^^^^
+  File "/Users/bohao/Desktop/AykAI/src/persistence/elasticsearch_client.py", line 116, in upsert_children
+    batch_size = max(1,settings.elasticsearch_bulk_batch_size)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'config.settings' has no attribute 'elasticsearch_bulk_batch_size'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/api/routes/ingest.py", line 24, in ingest
+    state = await run_in_threadpool(
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+    )
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/starlette/concurrency.py", line 32, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/anyio/to_thread.py", line 63, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 2518, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 1002, in run
+    result = context.run(func, *args)
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/pregel/main.py", line 3309, in invoke
+    for chunk in self.stream(
+                 ~~~~~~~~~~~^
+        input,
+        ^^^^^^
+    ...<10 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    ):
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/pregel/main.py", line 2736, in stream
+    for _ in runner.tick(
+             ~~~~~~~~~~~^
+        [t for t in loop.tasks.values() if not t.writes],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        schedule_task=loop.accept_push,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ):
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/pregel/_runner.py", line 167, in tick
+    run_with_retry(
+    ~~~~~~~~~~~~~~^
+        t,
+        ^^
+    ...<10 lines>...
+        },
+        ^^
+    )
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/pregel/_retry.py", line 126, in run_with_retry
+    return task.proc.invoke(task.input, config)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/_internal/_runnable.py", line 656, in invoke
+    input = context.run(step.invoke, input, config, **kwargs)
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/_internal/_runnable.py", line 400, in invoke
+    ret = self.func(*args, **kwargs)
+  File "/Users/bohao/Desktop/AykAI/src/indexing/ingest_graph.py", line 122, in upsert_node
+    raise e
+  File "/Users/bohao/Desktop/AykAI/src/indexing/ingest_graph.py", line 116, in upsert_node
+    _run_with_retries(semantic_indexer.upsert_children, child_rows, stage="elasticsearch")
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/src/indexing/ingest_graph.py", line 45, in _run_with_retries
+    raise RuntimeError(f"ingest write failed at stage={stage}: {last_exc}") from last_exc
+RuntimeError: ingest write failed at stage=elasticsearch: module 'config.settings' has no attribute 'elasticsearch_bulk_batch_size'
+During task with name 'upsert' and id 'b1bc3692-7f4d-e911-efdf-3914c8c90208'
+2026-04-08 23:21:27 | INFO | api.main | http_request method=POST path=/api/ingest status=500 duration_ms=3379
+2026-04-08 23:22:21 | INFO | api.routes.ingest | ingest_start doc_id=doc-es-check-5 source=es-check content_len=61
+2026-04-08 23:22:22 | INFO | elastic_transport.transport | POST http://localhost:9200/_analyze [status:400 duration:0.005s]
+2026-04-08 23:22:22 | INFO | elastic_transport.transport | HEAD http://localhost:9200/rag_child_chunks [status:200 duration:0.002s]
+2026-04-08 23:22:22 | INFO | elastic_transport.transport | POST http://localhost:9200/rag_child_chunks/_search [status:200 duration:0.004s]
+2026-04-08 23:22:22 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 23:22:25 | ERROR | api.routes.ingest | ingest_failed doc_id=doc-es-check-5 error=ingest write failed at stage=elasticsearch: 'type' object does not support item assignment
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/src/indexing/ingest_graph.py", line 41, in _run_with_retries
+    func(rows)
+    ~~~~^^^^^^
+  File "/Users/bohao/Desktop/AykAI/src/persistence/elasticsearch_client.py", line 119, in upsert_children
+    ops = list[dict[str, Any]] = []
+          ~~~~^^^^^^^^^^^^^^^^
+TypeError: 'type' object does not support item assignment
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/bohao/Desktop/AykAI/api/routes/ingest.py", line 24, in ingest
+    state = await run_in_threadpool(
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+    )
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/starlette/concurrency.py", line 32, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/anyio/to_thread.py", line 63, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 2518, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 1002, in run
+    result = context.run(func, *args)
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/pregel/main.py", line 3309, in invoke
+    for chunk in self.stream(
+                 ~~~~~~~~~~~^
+        input,
+        ^^^^^^
+    ...<10 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    ):
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/pregel/main.py", line 2736, in stream
+    for _ in runner.tick(
+             ~~~~~~~~~~~^
+        [t for t in loop.tasks.values() if not t.writes],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        schedule_task=loop.accept_push,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ):
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/pregel/_runner.py", line 167, in tick
+    run_with_retry(
+    ~~~~~~~~~~~~~~^
+        t,
+        ^^
+    ...<10 lines>...
+        },
+        ^^
+    )
+    ^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/pregel/_retry.py", line 126, in run_with_retry
+    return task.proc.invoke(task.input, config)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/_internal/_runnable.py", line 656, in invoke
+    input = context.run(step.invoke, input, config, **kwargs)
+  File "/Users/bohao/Desktop/AykAI/.venv/lib/python3.14/site-packages/langgraph/_internal/_runnable.py", line 400, in invoke
+    ret = self.func(*args, **kwargs)
+  File "/Users/bohao/Desktop/AykAI/src/indexing/ingest_graph.py", line 122, in upsert_node
+    raise e
+  File "/Users/bohao/Desktop/AykAI/src/indexing/ingest_graph.py", line 116, in upsert_node
+    _run_with_retries(semantic_indexer.upsert_children, child_rows, stage="elasticsearch")
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bohao/Desktop/AykAI/src/indexing/ingest_graph.py", line 45, in _run_with_retries
+    raise RuntimeError(f"ingest write failed at stage={stage}: {last_exc}") from last_exc
+RuntimeError: ingest write failed at stage=elasticsearch: 'type' object does not support item assignment
+During task with name 'upsert' and id '239c2e0c-6463-058d-0fae-1974aff3a873'
+2026-04-08 23:22:25 | INFO | api.main | http_request method=POST path=/api/ingest status=500 duration_ms=3264
+2026-04-08 23:23:48 | INFO | api.routes.ingest | ingest_start doc_id=doc-es-check-6 source=es-check content_len=47
+2026-04-08 23:23:48 | INFO | elastic_transport.transport | POST http://localhost:9200/_analyze [status:400 duration:0.004s]
+2026-04-08 23:23:48 | INFO | elastic_transport.transport | HEAD http://localhost:9200/rag_child_chunks [status:200 duration:0.002s]
+2026-04-08 23:23:48 | INFO | elastic_transport.transport | POST http://localhost:9200/rag_child_chunks/_search [status:200 duration:0.003s]
+2026-04-08 23:23:48 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 23:23:52 | INFO | elastic_transport.transport | PUT http://localhost:9200/_bulk?refresh=wait_for [status:200 duration:0.979s]
+2026-04-08 23:23:52 | DEBUG | jieba | Building prefix dict from the default dictionary ...
+2026-04-08 23:23:52 | DEBUG | jieba | Loading model from cache /var/folders/qs/5st8bn617_9bcmqhspc9m1n00000gn/T/jieba.cache
+2026-04-08 23:23:52 | DEBUG | jieba | Loading model cost 0.203 seconds.
+2026-04-08 23:23:52 | DEBUG | jieba | Prefix dict has been built successfully.
+2026-04-08 23:23:52 | INFO | api.routes.ingest | ingest_done doc_id=doc-es-check-6 inserted_parents=1 inserted_children=1
+2026-04-08 23:23:52 | INFO | api.main | http_request method=POST path=/api/ingest status=200 duration_ms=4063
+2026-04-08 23:30:09 | INFO | api.main | http_request method=GET path=/api/health status=200 duration_ms=3
+2026-04-08 23:30:25 | INFO | api.routes.ingest | ingest_start doc_id=postman-final-001 source=postman-manual content_len=38
+2026-04-08 23:30:25 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 23:30:28 | INFO | elastic_transport.transport | PUT http://localhost:9200/_bulk?refresh=wait_for [status:200 duration:0.704s]
+2026-04-08 23:30:28 | INFO | api.routes.ingest | ingest_done doc_id=postman-final-001 inserted_parents=1 inserted_children=1
+2026-04-08 23:30:28 | INFO | api.main | http_request method=POST path=/api/ingest status=200 duration_ms=3889
+2026-04-08 23:30:28 | INFO | api.routes.query | query_start stream=False query_len=13
+2026-04-08 23:30:44 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-08 23:30:44 | INFO | elastic_transport.transport | POST http://localhost:9200/rag_child_chunks/_search [status:200 duration:0.049s]
+2026-04-08 23:30:44 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 23:30:44 | INFO | elastic_transport.transport | POST http://localhost:9200/rag_child_chunks/_search [status:200 duration:0.005s]
+2026-04-08 23:30:44 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 23:30:44 | INFO | elastic_transport.transport | POST http://localhost:9200/rag_child_chunks/_search [status:200 duration:0.004s]
+2026-04-08 23:30:44 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 23:30:44 | INFO | elastic_transport.transport | POST http://localhost:9200/rag_child_chunks/_search [status:200 duration:0.004s]
+2026-04-08 23:30:44 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 23:30:44 | INFO | elastic_transport.transport | POST http://localhost:9200/rag_child_chunks/_search [status:200 duration:0.004s]
+2026-04-08 23:30:44 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 23:30:58 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-08 23:30:58 | INFO | api.routes.query | query_done stream=False references=8 answer_len=121
+2026-04-08 23:30:58 | INFO | api.main | http_request method=POST path=/api/query status=200 duration_ms=29546
+2026-04-08 23:30:58 | INFO | api.routes.query | query_stream_start query_len=13
+2026-04-08 23:30:58 | INFO | api.main | http_request method=POST path=/api/query/stream status=200 duration_ms=1
+2026-04-08 23:31:13 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-08 23:31:13 | INFO | elastic_transport.transport | POST http://localhost:9200/rag_child_chunks/_search [status:200 duration:0.014s]
+2026-04-08 23:31:13 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 23:31:13 | INFO | elastic_transport.transport | POST http://localhost:9200/rag_child_chunks/_search [status:200 duration:0.007s]
+2026-04-08 23:31:13 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 23:31:13 | INFO | elastic_transport.transport | POST http://localhost:9200/rag_child_chunks/_search [status:200 duration:0.006s]
+2026-04-08 23:31:13 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 23:31:13 | INFO | elastic_transport.transport | POST http://localhost:9200/rag_child_chunks/_search [status:200 duration:0.006s]
+2026-04-08 23:31:13 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 23:31:13 | INFO | elastic_transport.transport | POST http://localhost:9200/rag_child_chunks/_search [status:200 duration:0.005s]
+2026-04-08 23:31:14 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 23:31:14 | INFO | elastic_transport.transport | POST http://localhost:9200/rag_child_chunks/_search [status:200 duration:0.006s]
+2026-04-08 23:31:14 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 23:31:14 | INFO | api.routes.query | query_stream_references count=8
+2026-04-08 23:31:14 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-08 23:31:27 | INFO | api.routes.query | query_stream_done references=8 answer_len=186
+2026-04-08 23:33:54 | INFO | api.main | http_request method=GET path=/api/health status=200 duration_ms=3
+2026-04-08 23:33:57 | INFO | api.main | http_request method=GET path=/api/health status=200 duration_ms=0
+2026-04-08 23:34:53 | INFO | api.main | http_request method=POST path=/api/ingest status=422 duration_ms=5
+2026-04-08 23:37:12 | INFO | api.routes.ingest | ingest_start doc_id=postman-demo-001 source=postman-demo content_len=40
+2026-04-08 23:37:13 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 23:37:16 | INFO | elastic_transport.transport | PUT http://localhost:9200/_bulk?refresh=wait_for [status:200 duration:0.622s]
+2026-04-08 23:37:16 | INFO | api.routes.ingest | ingest_done doc_id=postman-demo-001 inserted_parents=1 inserted_children=1
+2026-04-08 23:37:16 | INFO | api.main | http_request method=POST path=/api/ingest status=200 duration_ms=3973
+2026-04-08 23:37:40 | INFO | api.routes.query | query_start stream=False query_len=9
+2026-04-08 23:38:05 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-08 23:38:06 | INFO | elastic_transport.transport | POST http://localhost:9200/rag_child_chunks/_search [status:200 duration:0.028s]
+2026-04-08 23:38:06 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 23:38:06 | INFO | elastic_transport.transport | POST http://localhost:9200/rag_child_chunks/_search [status:200 duration:0.008s]
+2026-04-08 23:38:06 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 23:38:06 | INFO | elastic_transport.transport | POST http://localhost:9200/rag_child_chunks/_search [status:200 duration:0.007s]
+2026-04-08 23:38:06 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 23:38:06 | INFO | elastic_transport.transport | POST http://localhost:9200/rag_child_chunks/_search [status:200 duration:0.009s]
+2026-04-08 23:38:06 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 23:38:06 | INFO | elastic_transport.transport | POST http://localhost:9200/rag_child_chunks/_search [status:200 duration:0.014s]
+2026-04-08 23:38:06 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 23:38:06 | INFO | elastic_transport.transport | POST http://localhost:9200/rag_child_chunks/_search [status:200 duration:0.005s]
+2026-04-08 23:38:06 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2026-04-08 23:38:22 | INFO | httpx | HTTP Request: POST https://api.siliconflow.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-08 23:38:22 | INFO | api.routes.query | query_done stream=False references=8 answer_len=170
+2026-04-08 23:38:22 | INFO | api.main | http_request method=POST path=/api/query status=200 duration_ms=42278
+2026-04-08 23:46:08 | INFO | api.main | http_request method=GET path=/api/health status=200 duration_ms=7

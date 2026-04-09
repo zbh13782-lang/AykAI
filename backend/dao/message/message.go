@@ -1,8 +1,8 @@
 package message
 
 import (
-	"GopherAI/common/mysql"
-	"GopherAI/model"
+	"AykAI/common/mysql"
+	"AykAI/model"
 )
 
 func GetMessagesBySessionID(sessionID string) ([]model.Message, error) {

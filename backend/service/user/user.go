@@ -1,13 +1,13 @@
 package user
 
 import (
-	"GopherAI/common/code"
-	myemail "GopherAI/common/email"
-	myredis "GopherAI/common/redis"
-	"GopherAI/dao/user"
-	"GopherAI/model"
-	"GopherAI/utils"
-	"GopherAI/utils/myjwt"
+	"AykAI/common/code"
+	myemail "AykAI/common/email"
+	myredis "AykAI/common/redis"
+	"AykAI/dao/user"
+	"AykAI/model"
+	"AykAI/utils"
+	"AykAI/utils/myjwt"
 	"log"
 )
 

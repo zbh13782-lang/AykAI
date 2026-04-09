@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"GopherAI/config"
+	"AykAI/config"
 )
 
 type pythonAIClient struct {
