@@ -70,19 +70,30 @@ class PostgresParentStore:
                     normalized_rows,
                 )
 
-    def fetch_parent(self,parent_ids:list[str]) -> dict[str,dict[str, Any]]:
+    def fetch_parent(self, parent_ids: list[str], owner_id: str | None = None) -> dict[str, dict[str, Any]]:
         if not parent_ids:
             return {}
 
         with psycopg.connect(self.dsn,row_factory=dict_row) as conn:
             with conn.cursor() as cur:
-                cur.execute(
-                    """
-                    SELECT parent_id, doc_id, source, content, metadata
-                    FROM parent_chunks
-                    WHERE parent_id = ANY (%s)
-                    """,
-                    (parent_ids,),
-                )
+                if owner_id:
+                    cur.execute(
+                        """
+                        SELECT parent_id, doc_id, source, content, metadata
+                        FROM parent_chunks
+                        WHERE parent_id = ANY (%s)
+                          AND metadata->>'owner_id' = %s
+                        """,
+                        (parent_ids, owner_id),
+                    )
+                else:
+                    cur.execute(
+                        """
+                        SELECT parent_id, doc_id, source, content, metadata
+                        FROM parent_chunks
+                        WHERE parent_id = ANY (%s)
+                        """,
+                        (parent_ids,),
+                    )
                 row = cur.fetchall()
         return {r["parent_id"]:dict(r) for r in row}

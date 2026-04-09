@@ -97,7 +97,7 @@ class BM25InvertedIndexRetriever:
 
             self._recompute_avgdl()
 
-    def retrieve(self, query: str, top_k: int = 20) -> list[dict[str, Any]]:
+    def retrieve(self, query: str, top_k: int = 20, owner_id: str | None = None) -> list[dict[str, Any]]:
         query_tokens = self._tokenize(query)
         if not query_tokens:
             return []
@@ -138,5 +138,9 @@ class BM25InvertedIndexRetriever:
             results: list[dict[str, Any]] = []
             for chunk_id, score in ranked:
                 doc = self._docs[chunk_id]
+                if owner_id and str((doc.get("metadata") or {}).get("owner_id", "")) != owner_id:
+                    continue
                 results.append({**doc, "score": float(score), "retrieval_source": "bm25"})
+                if len(results) >= top_k:
+                    break
             return results

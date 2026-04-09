@@ -52,8 +52,7 @@ func GetUserSessionsByUserName(userName string) ([]model.SessionInfo, error) {
 }
 
 // 创建新会话(同步生成)
-func CreateSessionAndSendMessage(userName, userQuestion, modelType string) (string, string, code.Code) {
-	_ = modelType
+func CreateSessionAndSendMessage(userName, userQuestion string) (string, string, code.Code) {
 	newSession := &model.Session{
 		ID:       uuid.New().String(),
 		UserName: userName,
@@ -95,8 +94,7 @@ func CreateStreamSessionOnly(userName string, userQuestion string) (string, code
 	return createdSession.ID, code.CodeSuccess
 }
 
-func StreamMessageToExistingSession(userName, sessionID, userQuestion, modelType string, writer http.ResponseWriter) code.Code {
-	_ = modelType
+func StreamMessageToExistingSession(userName, sessionID, userQuestion string, writer http.ResponseWriter) code.Code {
 	flusher, ok := writer.(http.Flusher)
 	if !ok {
 		log.Println("StreamMessageToExistingSession: Streaming unsupported")
@@ -137,13 +135,13 @@ func StreamMessageToExistingSession(userName, sessionID, userQuestion, modelType
 }
 
 // 整合上面两个函数
-func CreateStreamSessionAndSendMessage(userName, userQuestion, modelType string, writer http.ResponseWriter) (string, code.Code) {
+func CreateStreamSessionAndSendMessage(userName, userQuestion string, writer http.ResponseWriter) (string, code.Code) {
 	sessionID, code_ := CreateStreamSessionOnly(userName, userQuestion)
 	if code_ != code.CodeSuccess {
 		return "", code_
 	}
 
-	code_ = StreamMessageToExistingSession(userName, sessionID, userQuestion, modelType, writer)
+	code_ = StreamMessageToExistingSession(userName, sessionID, userQuestion, writer)
 	if code_ != code.CodeSuccess {
 		return sessionID, code_
 	}
@@ -151,8 +149,7 @@ func CreateStreamSessionAndSendMessage(userName, userQuestion, modelType string,
 	return sessionID, code.CodeSuccess
 }
 
-func ChatSend(userName, sessionID, userQuestion, modelType string) (string, code.Code) {
-	_ = modelType
+func ChatSend(userName, sessionID, userQuestion string) (string, code.Code) {
 	if !verifySessionOwner(userName, sessionID) {
 		return "", code.CodeForbidden
 	}
@@ -193,8 +190,8 @@ func GetChatHistory(userName, sessionID string) ([]model.History, code.Code) {
 	return history, code.CodeSuccess
 }
 
-func ChatStreamSend(userName, sessionID, userQuestion, modelType string, writer http.ResponseWriter) code.Code {
-	return StreamMessageToExistingSession(userName, sessionID, userQuestion, modelType, writer)
+func ChatStreamSend(userName, sessionID, userQuestion string, writer http.ResponseWriter) code.Code {
+	return StreamMessageToExistingSession(userName, sessionID, userQuestion, writer)
 }
 
 func IngestMarkdown(userName, sessionID, docID, source, content string, metadata map[string]any) (int, int, code.Code) {

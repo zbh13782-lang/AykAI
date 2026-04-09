@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 #接受文档接口
 @router.post("/ingest", response_model=IngestResponse)
-async def ingest(req: IngestRequest, _: str = Depends(verify_internal_request)) -> IngestResponse:
+async def ingest(req: IngestRequest, owner_id: str = Depends(verify_internal_request)) -> IngestResponse:
     logger.info(
         "ingest_start doc_id=%s source=%s content_len=%s",
         req.doc_id,
@@ -22,13 +22,15 @@ async def ingest(req: IngestRequest, _: str = Depends(verify_internal_request)) 
     )
     services = get_services()
     try:
+        metadata = dict(req.metadata or {})
+        metadata["owner_id"] = owner_id
         state = await run_in_threadpool(
             services["ingest_graph"].invoke,
             {
                 "doc_id": req.doc_id,
                 "source": req.source,
                 "content": req.content,
-                "metadata": req.metadata,
+                "metadata": metadata,
             },
         )
         logger.info(

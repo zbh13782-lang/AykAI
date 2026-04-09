@@ -11,7 +11,7 @@ RAG_PROMPT = ChatPromptTemplate.from_messages(
     [
         (
             "system",
-             "You are a helpful assistant. Answer based only on provided context. If unsure, say you do not know.",
+             "你是AykAI，请根据提供的信息回答问题，如果是简单的问题比如你是谁这种不需要参考的问题就直接回答，如果你不确定问题的答案，就回答“抱歉，我不清楚问题的答案”",
         ),
         (
             "human",

@@ -83,7 +83,13 @@ class MilvusService:
             col.upsert(data)
         col.flush()
 
-    def vector_search(self,query_vector:list[float],top_k:int)->list[dict[str,Any]]:
+    def vector_search(
+        self,
+        query_vector: list[float],
+        top_k: int,
+        owner_id: str | None = None,
+        final_top_k: int | None = None,
+    ) -> list[dict[str, Any]]:
         col = self._child_collection()
         try:
             res = col.search(
@@ -104,6 +110,9 @@ class MilvusService:
             )
         out: list[dict[str, Any]] = []
         for hit in res[0]:
+            metadata = hit.entity.get("metadata") or {}
+            if owner_id and str(metadata.get("owner_id", "")) != owner_id:
+                continue
             out.append(
                 {
                     "chunk_id": hit.entity.get("chunk_id"),
@@ -112,11 +121,13 @@ class MilvusService:
                     "source": hit.entity.get("source"),
                     "chunk_order": hit.entity.get("chunk_order"),
                     "content": hit.entity.get("content"),
-                    "metadata": hit.entity.get("metadata") or {},
+                    "metadata": metadata,
                     "score": float(hit.score),
                     "retrieval_source": "vector",
                 }
             )
+            if final_top_k and len(out) >= final_top_k:
+                break
         return out
 
 

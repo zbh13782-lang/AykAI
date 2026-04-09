@@ -6,15 +6,15 @@ class ElasticsearchBM25Retriever:
         self.es_service = es_service
         self.fallback = fallback
 
-    def retrieve(self,query:str,top_k:int = 20) -> list[dict]:
+    def retrieve(self, query: str, top_k: int = 20, owner_id: str | None = None) -> list[dict]:
         if self.es_service.enabled:
             try:
-                return self.es_service.bm25_search(query,top_k)
+                return self.es_service.bm25_search(query, top_k, owner_id=owner_id)
             except Exception as e:
                 if self.fallback is None:
                     return []
-                return self.fallback.retrieve(query,top_k)
+                return self.fallback.retrieve(query, top_k, owner_id=owner_id)
 
         if self.fallback is None:
             return []
-        return self.fallback.retrieve(query=query, top_k=top_k)
+        return self.fallback.retrieve(query=query, top_k=top_k, owner_id=owner_id)

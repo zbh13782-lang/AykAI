@@ -159,22 +159,34 @@ class ElasticsearchService:
                 )
                 raise RuntimeError(f"Elasticsearch bulk upsert failed for {len(failed_items)} items")
 
-    def bm25_search(self,query:str,top_k:int = 8) -> list[dict[str, Any]]:
+    def bm25_search(self, query: str, top_k: int = 8, owner_id: str | None = None) -> list[dict[str, Any]]:
         client = self.connect()
         if client is None:
             return []
 
+        query_body: dict[str, Any] = {"match": {"content": {"query": query}}}
+        if owner_id:
+            query_body = {
+                "bool": {
+                    "must": [{"match": {"content": {"query": query}}}],
+                    "filter": [{"term": {"metadata.owner_id.keyword": owner_id}}],
+                }
+            }
+
         try :
             result = client.search(
                 index = self.settings.elasticsearch_index,
-                query={"match": {"content": {"query": query}}},
+                query=query_body,
                 size=top_k,
             )
 
         except Exception as exc:  # noqa: BLE001
             logger.warning("elasticsearch_bm25_search_failed error=%s", exc)
             raise
-        return self._hits_to_rows(result.get("hits", {}).get("hits", []), retrieval_source="bm25")
+        rows = self._hits_to_rows(result.get("hits", {}).get("hits", []), retrieval_source="bm25")
+        if owner_id:
+            rows = [r for r in rows if str((r.get("metadata") or {}).get("owner_id", "")) == owner_id]
+        return rows[:top_k]
 
     def scan_bm25_docs(self, limit: int = 10000, batch_size: int = 500) -> list[dict[str, Any]]:
         client = self.connect()

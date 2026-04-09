@@ -16,13 +16,13 @@ logger = logging.getLogger(__name__)
 
 
 @router.post("/query", response_model=QueryResponse)
-async def query(req: QueryRequest, _: str = Depends(verify_internal_request)) -> QueryResponse | StreamingResponse:
+async def query(req: QueryRequest, owner_id: str = Depends(verify_internal_request)) -> QueryResponse | StreamingResponse:
     logger.info("query_start stream=%s query_len=%s", req.stream, len(req.query))
     services = get_services()
     try:
         if req.stream:
-            return await query_stream(req)
-        state = await run_in_threadpool(services["query_graph"].invoke, {"query": req.query})
+            return await query_stream(req, owner_id)
+        state = await run_in_threadpool(services["query_graph"].invoke, {"query": req.query, "owner_id": owner_id})
         logger.info(
             "query_done stream=%s references=%s answer_len=%s",
             req.stream,
@@ -36,13 +36,16 @@ async def query(req: QueryRequest, _: str = Depends(verify_internal_request)) ->
 
 
 @router.post("/query/stream")
-async def query_stream(req: QueryRequest, _: str = Depends(verify_internal_request)) -> StreamingResponse:
+async def query_stream(req: QueryRequest, owner_id: str = Depends(verify_internal_request)) -> StreamingResponse:
     logger.info("query_stream_start query_len=%s", len(req.query))
     services = get_services()
 
     async def event_stream():
         try:
-            state = await run_in_threadpool(services["query_graph"].invoke, {"query": req.query, "skip_generate": True})
+            state = await run_in_threadpool(
+                services["query_graph"].invoke,
+                {"query": req.query, "skip_generate": True, "owner_id": owner_id},
+            )
             refs = state.get("parent_rows", [])
             logger.info("query_stream_references count=%s", len(refs))
             yield f"data: {json.dumps({'event': 'references', 'data': refs}, ensure_ascii=True)}\n\n"

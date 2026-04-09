@@ -21,8 +21,7 @@ type (
 		Sessions []model.SessionInfo `json:"sessions,omitempty"`
 	}
 	CreateSessionAndSendMessageRequest struct {
-		UserQuestion string `json:"question" binding:"required"`  // 用户问题;
-		ModelType    string `json:"modelType" binding:"required"` // 模型类型;
+		UserQuestion string `json:"question" binding:"required"` // 用户问题;
 	}
 
 	CreateSessionAndSendMessageResponse struct {
@@ -33,7 +32,6 @@ type (
 
 	ChatSendRequest struct {
 		UserQuestion string `json:"question" binding:"required"`            // 用户问题;
-		ModelType    string `json:"modelType" binding:"required"`           // 模型类型;
 		SessionID    string `json:"sessionId,omitempty" binding:"required"` // 当前会话ID
 	}
 
@@ -89,7 +87,7 @@ func CreateSessionAndSendMessage(c *gin.Context) {
 		return
 	}
 
-	session_id, aiInformation, code_ := session.CreateSessionAndSendMessage(userName, req.UserQuestion, req.ModelType)
+	session_id, aiInformation, code_ := session.CreateSessionAndSendMessage(userName, req.UserQuestion)
 	if code_ != code.CodeSuccess {
 		c.JSON(http.StatusOK, res.CodeOf(code_))
 		return
@@ -132,7 +130,7 @@ func CreateStreamSessionAndSendMessage(c *gin.Context) {
 	c.Writer.WriteString(fmt.Sprintf("data: {\"sessionId\": \"%s\"}\n\n", sessionID))
 	c.Writer.Flush()
 
-	code_ = session.StreamMessageToExistingSession(userName, sessionID, req.UserQuestion, req.ModelType, http.ResponseWriter(c.Writer))
+	code_ = session.StreamMessageToExistingSession(userName, sessionID, req.UserQuestion, http.ResponseWriter(c.Writer))
 	if code_ != code.CodeSuccess {
 		c.SSEvent("error", gin.H{
 			"message": "Failed to send message",
@@ -151,7 +149,7 @@ func ChatSend(c *gin.Context) {
 		return
 	}
 
-	aiInformation, code_ := session.ChatSend(userName, req.SessionID, req.UserQuestion, req.ModelType)
+	aiInformation, code_ := session.ChatSend(userName, req.SessionID, req.UserQuestion)
 
 	if code_ != code.CodeSuccess {
 		c.JSON(http.StatusOK, res.CodeOf(code_))
@@ -178,7 +176,7 @@ func ChatStreamSend(c *gin.Context) {
 	c.Header("Access-Control-Allow-Origin", "*")
 	c.Header("X-Accel-Buffering", "no") // 禁止代理缓存
 
-	code_ := session.ChatStreamSend(userName, req.SessionID, req.UserQuestion, req.ModelType, http.ResponseWriter(c.Writer))
+	code_ := session.ChatStreamSend(userName, req.SessionID, req.UserQuestion, http.ResponseWriter(c.Writer))
 	if code_ != code.CodeSuccess {
 		c.SSEvent("error", gin.H{"message": "Failed to send message"})
 		return

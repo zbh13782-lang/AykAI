@@ -14,6 +14,8 @@ def verify_internal_request(
 
     user_name = request.headers.get("X-User-Name", "")
     session_id = request.headers.get("X-Session-Id", "")
+    if not user_name:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="missing user context")
     request.state.user_name = user_name
     request.state.session_id = session_id
     return user_name

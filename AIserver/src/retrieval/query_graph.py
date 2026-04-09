@@ -17,6 +17,7 @@ from src.retrieval.query_rewriter import rewrite_query
 
 class QueryState(BaseModel):
     query: str
+    owner_id: str = ""
     skip_generate: bool = False
     rewritten_query: str = ""
     rewrite_strategy: str = "identity"
@@ -55,8 +56,18 @@ def build_query_graph(settings, vector_retriever, bm25_retriever, parent_store, 
 
         with ThreadPoolExecutor(max_workers=2) as pool:
             for q in queries:
-                vector_future = pool.submit(vector_retriever.retrieve, q, settings.retrieval_vector_top_k)
-                bm25_future = pool.submit(bm25_retriever.retrieve, q, settings.retrieval_bm25_top_k)
+                vector_future = pool.submit(
+                    vector_retriever.retrieve,
+                    q,
+                    settings.retrieval_vector_top_k,
+                    state.owner_id,
+                )
+                bm25_future = pool.submit(
+                    bm25_retriever.retrieve,
+                    q,
+                    settings.retrieval_bm25_top_k,
+                    state.owner_id,
+                )
                 vector_rows.extend(vector_future.result())
                 bm25_rows.extend(bm25_future.result())
 
@@ -84,10 +95,18 @@ def build_query_graph(settings, vector_retriever, bm25_retriever, parent_store, 
     def expand_parent_node(state:QueryState) -> QueryState:
         fused_rows = state.fused_rows
         parent_ids = [r["parent_id"] for r in fused_rows if r.get("parent_id")]
-        parent_map = parent_store.fetch_parent(parent_ids)
+        parent_map = parent_store.fetch_parent(parent_ids, owner_id=state.owner_id)
         blocks = []
         for row in fused_rows:
             parent = parent_map.get(row["parent_id"]) if row.get("parent_id") else None
+            if row.get("parent_id") and parent is None:
+                # 跳过 owner 不匹配或脏数据，避免泄漏其他用户文档。
+                continue
+
+            row_owner = str((row.get("metadata") or {}).get("owner_id", ""))
+            if state.owner_id and not parent and row_owner != state.owner_id:
+                continue
+
             blocks.append(
                 {
                     "source": (parent or {}).get("source") or row.get("source", "unknown"),
