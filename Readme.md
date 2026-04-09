@@ -12,7 +12,7 @@ SSE流失输出
 
 多路召回：向量检索 + 关键词检索 ，后面准备尝试Graphrag,todo
 
-父子索引：父块存pg，子块存milvus（本机）
+父子索引：父块存pg，子块存milvus
 
 多种文本类型：md，pdf
 
