@@ -16,7 +16,6 @@ SSE流失输出
 
 多种文本类型：md，pdf
 
-目前的不足（想法）：引入function calling，mcp等
 
 ## 启动流程
 
