@@ -1,4 +1,4 @@
-import { FormEvent, useState } from 'react'
+import { FormEvent, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { register, sendCaptcha } from '../api/user'
 import { ApiError } from '../api/client'
@@ -13,13 +13,32 @@ export default function RegisterPage() {
   const [cooldown, setCooldown] = useState(0)
   const [error, setError] = useState<string | null>(null)
   const [info, setInfo] = useState<string | null>(null)
+  // Hold the cooldown interval id so we can cancel it on unmount — otherwise
+  // it keeps firing setState on an unmounted component for up to 60s if the
+  // user navigates away mid-cooldown.
+  const cooldownRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (cooldownRef.current !== null) {
+        window.clearInterval(cooldownRef.current)
+        cooldownRef.current = null
+      }
+    }
+  }, [])
 
   function startCooldown() {
     setCooldown(60)
-    const id = window.setInterval(() => {
+    if (cooldownRef.current !== null) {
+      window.clearInterval(cooldownRef.current)
+    }
+    cooldownRef.current = window.setInterval(() => {
       setCooldown((prev) => {
         if (prev <= 1) {
-          window.clearInterval(id)
+          if (cooldownRef.current !== null) {
+            window.clearInterval(cooldownRef.current)
+            cooldownRef.current = null
+          }
           return 0
         }
         return prev - 1

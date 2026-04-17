@@ -33,6 +33,10 @@ export default function ChatPage() {
 
   const abortRef = useRef<AbortController | null>(null)
   const toastTimerRef = useRef<number | null>(null)
+  // Monotonic request id for history fetches. If the user clicks session A
+  // then B before A resolves, A's slow response would otherwise overwrite
+  // B's messages; we discard any response whose seq no longer matches.
+  const historySeqRef = useRef(0)
 
   const showToast = useCallback((msg: string) => {
     setToast(msg)
@@ -89,11 +93,16 @@ export default function ChatPage() {
   const selectSession = useCallback(
     async (id: string) => {
       if (streaming) return
+      const seq = ++historySeqRef.current
       setCurrentId(id)
       setMessages([])
       setHistoryLoading(true)
       try {
         const history = await fetchHistory(id)
+        // Drop the response if the user has since selected a different
+        // session — prevents a slow earlier request from overwriting the
+        // current session's message list.
+        if (seq !== historySeqRef.current) return
         setMessages(
           history.map((entry, idx) => ({
             id: `h-${id}-${idx}`,
@@ -102,11 +111,14 @@ export default function ChatPage() {
           })),
         )
       } catch (err) {
+        if (seq !== historySeqRef.current) return
         if (!handleAuthError(err)) {
           showToast(err instanceof ApiError ? err.message : '加载历史失败')
         }
       } finally {
-        setHistoryLoading(false)
+        if (seq === historySeqRef.current) {
+          setHistoryLoading(false)
+        }
       }
     },
     [handleAuthError, showToast, streaming],
