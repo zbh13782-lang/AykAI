@@ -137,23 +137,24 @@ function wrapStream(handlers: StreamHandlers): (payload: string) => void {
   }
 }
 
+// NOTE: `handlers.onError` is reserved for **in-stream** errors reported by
+// the Python service (`event:"error"`), which `apiStream` cannot detect —
+// the Go proxy forwards the envelope then resolves successfully. Thrown
+// errors (network / auth / HTTP) propagate via `throw` so the caller's
+// try/catch handles them; dispatching `onError` here too would double-fire
+// the toast.
 export async function streamNewSession(
   question: string,
   handlers: StreamHandlers,
   signal?: AbortSignal,
 ): Promise<void> {
-  try {
-    await apiStream(
-      '/api/v1/AI/chat/send-stream-new-session',
-      { question },
-      wrapStream(handlers),
-      signal,
-    )
-    handlers.onDone?.()
-  } catch (err) {
-    handlers.onError?.(err)
-    throw err
-  }
+  await apiStream(
+    '/api/v1/AI/chat/send-stream-new-session',
+    { question },
+    wrapStream(handlers),
+    signal,
+  )
+  handlers.onDone?.()
 }
 
 export async function streamSend(
@@ -162,18 +163,13 @@ export async function streamSend(
   handlers: StreamHandlers,
   signal?: AbortSignal,
 ): Promise<void> {
-  try {
-    await apiStream(
-      '/api/v1/AI/chat/send-stream',
-      { sessionId, question },
-      wrapStream(handlers),
-      signal,
-    )
-    handlers.onDone?.()
-  } catch (err) {
-    handlers.onError?.(err)
-    throw err
-  }
+  await apiStream(
+    '/api/v1/AI/chat/send-stream',
+    { sessionId, question },
+    wrapStream(handlers),
+    signal,
+  )
+  handlers.onDone?.()
 }
 
 export async function uploadMarkdown(

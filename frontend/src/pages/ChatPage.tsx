@@ -159,13 +159,20 @@ export default function ChatPage() {
           ),
         )
       }
+      // In-stream errors from the Python service (event:"error") don't
+      // reject `apiStream` — the Go proxy forwards them and resolves normally.
+      // Surface them via toast so the user isn't left staring at a
+      // half-rendered answer.
+      const onStreamError = (err: unknown) => {
+        showToast(err instanceof Error && err.message ? err.message : 'AI 服务异常')
+      }
 
       try {
         if (currentId) {
           await streamSend(
             currentId,
             text,
-            { onToken: appendToken },
+            { onToken: appendToken, onError: onStreamError },
             controller.signal,
           )
         } else {
@@ -173,6 +180,7 @@ export default function ChatPage() {
             text,
             {
               onToken: appendToken,
+              onError: onStreamError,
               onSessionId: (sid) => {
                 createdSessionId = sid
                 setCurrentId(sid)
