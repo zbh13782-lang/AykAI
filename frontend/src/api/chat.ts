@@ -39,42 +39,101 @@ export async function fetchHistory(sessionId: string): Promise<HistoryEntry[]> {
   return res.history ?? []
 }
 
+// A reference row returned by the RAG pipeline (Python service). Shape is
+// intentionally loose — we only surface the fields the UI actually renders.
+export interface StreamReference {
+  parent_id?: string | number
+  source?: string
+  title?: string
+  content?: string
+  [key: string]: unknown
+}
+
 // Streaming callbacks used by both SSE endpoints.
 export interface StreamHandlers {
   onSessionId?: (sessionId: string) => void
+  onReferences?: (refs: StreamReference[]) => void
   onToken: (token: string) => void
   onDone?: () => void
   onError?: (err: unknown) => void
 }
 
-// The Go backend emits the session id as a JSON blob `{"sessionId":"..."}`
-// at the start of a new-session stream. After that it emits raw text
-// tokens. The stream is terminated by a literal `[DONE]` payload.
+// The SSE wire format is a stack of wrappers (outer → inner):
 //
-// We intentionally DO NOT invoke `onDone` here — the caller fires it once
-// after `apiStream` resolves. Firing it here as well would cause duplicate
-// side-effects when the backend sends `[DONE]` before closing the stream,
-// and keeping it out also guarantees `onDone` still runs if the backend
-// closes the stream without emitting the sentinel.
+//   1. Go gateway (`backend/service/session/session.go`) — for a brand-new
+//      session, prepends **one** `data: {"sessionId":"<uuid>"}\n\n` event so
+//      the UI can bind the new session before rendering tokens. It also
+//      appends `data: [DONE]\n\n` once the upstream stream ends.
+//
+//   2. Python AI service (`AIserver/api/routes/query.py:51-64`) — emits the
+//      **actual** token stream as JSON envelopes:
+//        data: {"event":"references","data":[...]}\n\n
+//        data: {"event":"token","data":"<text>"}\n\n   (one per token)
+//        data: {"event":"done","data":{"answer":"...","references":[...]}}\n\n
+//        data: {"event":"error","data":"<message>"}\n\n   (on failure)
+//      The Go gateway forwards these verbatim to the browser.
+//
+// So `wrapStream` must parse the envelope and dispatch by `event`. Only
+// `event:"token"` payloads become visible text in the chat bubble — the
+// earlier revision leaked the raw JSON strings into the message body.
+//
+// We intentionally DO NOT invoke `onDone` on `[DONE]` or on `event:"done"`
+// here — the caller fires it exactly once after `apiStream` resolves, so
+// streams that end without either sentinel still terminate cleanly.
 function wrapStream(handlers: StreamHandlers): (payload: string) => void {
   return (payload) => {
     if (payload === '[DONE]') {
       return
     }
-    // Try to parse the first-event sessionId blob; fall back to treating
-    // the payload as a plain text token otherwise.
-    if (payload.startsWith('{') && payload.includes('sessionId')) {
-      try {
-        const parsed = JSON.parse(payload) as { sessionId?: string }
-        if (parsed.sessionId) {
-          handlers.onSessionId?.(parsed.sessionId)
-          return
-        }
-      } catch {
-        // fall through to plain token handling
+
+    // Anything that isn't a JSON object is just raw text — pass it through.
+    if (!payload.startsWith('{')) {
+      handlers.onToken(payload)
+      return
+    }
+
+    let parsed: Record<string, unknown>
+    try {
+      parsed = JSON.parse(payload) as Record<string, unknown>
+    } catch {
+      // Malformed JSON — fall back to plain-text rendering so the user at
+      // least sees *something* instead of silently losing the chunk.
+      handlers.onToken(payload)
+      return
+    }
+
+    // Session-binding event emitted by the Go gateway on new-session streams.
+    if (typeof parsed.sessionId === 'string') {
+      handlers.onSessionId?.(parsed.sessionId)
+      return
+    }
+
+    // Python event envelope.
+    switch (parsed.event) {
+      case 'token': {
+        const token = typeof parsed.data === 'string' ? parsed.data : ''
+        if (token) handlers.onToken(token)
+        return
+      }
+      case 'references': {
+        const refs = Array.isArray(parsed.data)
+          ? (parsed.data as StreamReference[])
+          : []
+        handlers.onReferences?.(refs)
+        return
+      }
+      case 'done':
+        // Final envelope from Python. `onDone` is fired once after
+        // `apiStream` resolves, so we don't double-invoke it here.
+        return
+      case 'error': {
+        const msg = typeof parsed.data === 'string' ? parsed.data : '流式请求失败'
+        handlers.onError?.(new Error(msg))
+        return
       }
     }
-    handlers.onToken(payload)
+
+    // Unknown JSON shape — ignore rather than leaking JSON into the bubble.
   }
 }
 
