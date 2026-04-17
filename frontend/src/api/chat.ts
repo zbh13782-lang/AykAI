@@ -50,10 +50,15 @@ export interface StreamHandlers {
 // The Go backend emits the session id as a JSON blob `{"sessionId":"..."}`
 // at the start of a new-session stream. After that it emits raw text
 // tokens. The stream is terminated by a literal `[DONE]` payload.
+//
+// We intentionally DO NOT invoke `onDone` here — the caller fires it once
+// after `apiStream` resolves. Firing it here as well would cause duplicate
+// side-effects when the backend sends `[DONE]` before closing the stream,
+// and keeping it out also guarantees `onDone` still runs if the backend
+// closes the stream without emitting the sentinel.
 function wrapStream(handlers: StreamHandlers): (payload: string) => void {
   return (payload) => {
     if (payload === '[DONE]') {
-      handlers.onDone?.()
       return
     }
     // Try to parse the first-event sessionId blob; fall back to treating
