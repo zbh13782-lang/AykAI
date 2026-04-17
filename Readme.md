@@ -54,7 +54,15 @@ cp .env.example .env
 docker compose up -d --build python-api go-backend
 ```
 
-### 4. 检查启动状态
+### 4.启动前端
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### 5. 检查启动状态
 
 ```bash
 docker compose ps
@@ -72,12 +80,13 @@ docker compose ps
 - aykai-elasticsearch 为 healthy
 - milvus-standalone 为 Up
 
-### 5. 接口地址
+### 6. 接口地址
 
 - Go 后端地址：http://127.0.0.1:9030
 - Python AI 地址：http://127.0.0.1:8000
-
-### 6. 快速验证
+- 前端:http://127.0.0.1:5173
+  
+### 7. 快速验证
 
 1) 验证 Python 健康检查
 
@@ -96,8 +105,9 @@ curl -i http://127.0.0.1:9030/api/v1/user/login \
 ```
 
 账号不存在也没关系，只要返回了业务响应（而不是连接失败）就说明 Go 后端已启动成功。
+如果你发现验证码发不了，说明是stmp服务有问题
 
-### 7. 停止服务
+### 8. 停止服务
 
 ```bash
 docker compose down
