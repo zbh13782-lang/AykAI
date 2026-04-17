@@ -32,10 +32,28 @@ export default function ChatPage() {
   const [toast, setToast] = useState<string | null>(null)
 
   const abortRef = useRef<AbortController | null>(null)
+  const toastTimerRef = useRef<number | null>(null)
 
   const showToast = useCallback((msg: string) => {
     setToast(msg)
-    window.setTimeout(() => setToast(null), 3500)
+    // Reset any in-flight timer so back-to-back toasts don't dismiss each
+    // other early (e.g. a stream failure followed by a session-refresh
+    // failure would otherwise clear the second toast after ~0ms).
+    if (toastTimerRef.current !== null) {
+      window.clearTimeout(toastTimerRef.current)
+    }
+    toastTimerRef.current = window.setTimeout(() => {
+      setToast(null)
+      toastTimerRef.current = null
+    }, 3500)
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current !== null) {
+        window.clearTimeout(toastTimerRef.current)
+      }
+    }
   }, [])
 
   const handleAuthError = useCallback(

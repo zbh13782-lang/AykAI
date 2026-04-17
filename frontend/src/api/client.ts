@@ -108,6 +108,21 @@ export async function apiStream(
     throw new ApiError(res.status, `流式请求失败: ${res.status}`)
   }
 
+  // The Go JWT middleware returns **HTTP 200 + JSON envelope** on auth
+  // failure (e.g. `{status_code: 2006, status_msg: "无效的Token"}`) instead
+  // of a 4xx. If we blindly treated the body as SSE, no events would be
+  // parsed and the caller would see a silent empty stream. Detect the JSON
+  // content type and unwrap it so the envelope becomes a thrown ApiError,
+  // which ChatPage can catch and redirect to /login.
+  const contentType = res.headers.get('content-type') || ''
+  if (contentType.includes('application/json')) {
+    const data = (await res.json()) as BaseResponse
+    unwrap(data)
+    // If the envelope reported success somehow on a streaming endpoint,
+    // surface that as an error rather than silently resolving.
+    throw new ApiError(res.status, '流式请求返回了非流式响应')
+  }
+
   const reader = res.body.getReader()
   const decoder = new TextDecoder('utf-8')
   let buffer = ''
