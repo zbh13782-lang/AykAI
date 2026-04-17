@@ -133,6 +133,17 @@ function wrapStream(handlers: StreamHandlers): (payload: string) => void {
       }
     }
 
+    // Go gateway error envelope emitted via Gin's `c.SSEvent("error",
+    // gin.H{"message": "..."})` — e.g. session ownership check failure or
+    // Python service unreachable (see backend/controller/session/session.go
+    // :123, :135, :181). Our SSE parser drops the `event:` line, so all we
+    // receive is `{"message":"..."}` with no `event` field. Surface it via
+    // onError so the user gets a toast instead of a half-rendered bubble.
+    if (typeof parsed.message === 'string') {
+      handlers.onError?.(new Error(parsed.message))
+      return
+    }
+
     // Unknown JSON shape — ignore rather than leaking JSON into the bubble.
   }
 }
